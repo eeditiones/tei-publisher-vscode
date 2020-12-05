@@ -42,22 +42,22 @@ class KBA {
         switch (item.type) {
             case 'person':
                 return {
-                    before: `<persName key="${item.id}">`,
+                    before: `<persName ref="${item.id}">`,
                     after: `</persName>`
                 };
             case 'organisation':
                 return {
-                    before: `<orgName key="${item.id}">`,
+                    before: `<orgName ref="${item.id}">`,
                     after: `</orgName>`
                 };
             case 'places':
                 return {
-                    before: `<placeName key="${item.id}">`,
+                    before: `<placeName ref="${item.id}">`,
                     after: `</placeName>`
                 };
             case 'terms':
                 return {
-                    before: `<term key="${item.id}">`,
+                    before: `<term ref="${item.id}">`,
                     after: `</term>`
                 };
         }

@@ -23,6 +23,11 @@
         "command": "teipublisher.lookup",
         "title": "Look up the current selection",
         "category": "teipublisher"
+      },
+      {
+        "command": "teipublisher.preview",
+        "title": "Preview the current document",
+        "category": "teipublisher"
       }
     ],
     "keybindings": [
@@ -30,6 +35,11 @@
         "command": "teipublisher.lookup",
         "key": "ctrl-shift-e",
         "mac": "cmd-shift-e"
+      },
+      {
+        "command": "teipublisher.preview",
+        "key": "ctrl-shift-a",
+        "mac": "cmd-shift-a"
       }
     ],
     "configuration": {
@@ -74,5 +84,8 @@
     "vscode-test": "^1.4.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "axios": "^0.21.0"
   }
 }
