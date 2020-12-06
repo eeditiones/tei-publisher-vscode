@@ -47,13 +47,36 @@
       "title": "TEI Publisher Extension configuration",
       "properties": {
         "teipublisher.apiList": {
-          "type": "object",
+          "type": "array",
           "scope": "application",
-          "default": {
-            "Orte": "places",
-            "Akteure": "actors",
-            "Sachen": "terms"
-          }
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          },
+          "default": [
+            {
+              "name": "places",
+              "label": "Orte",
+              "plugin": "kba"
+            },
+            {
+              "name": "actors",
+              "label": "Akteure",
+              "plugin": "kba"
+            },
+            {
+              "name": "terms",
+              "label": "Sachen",
+              "plugin": "kba"
+            }
+          ]
         }
       }
     }

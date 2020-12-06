@@ -1,73 +1,6 @@
-class KBA {
-
-    async query(register, key) {
-        let apis = register === '' ?  ['actors', 'places', 'terms'] : [register];
-        const results = [];
-        for (let api of apis) {
-            console.log('sending %s query: %s', api, key);
-            const json = await fetch(`https://kb-prepare.k-r.ch/api/${api}?search=${encodeURIComponent(key)}`, { mode: "cors" })
-                .then(response => response.json());
-            let label;
-            switch (api) {
-                case 'places':
-                    label = 'placeName_full';
-                    break;
-                case 'terms':
-                    label = 'fullLabel';
-                    break;
-                default:
-                    label = 'persName_full';
-                    break;
-            }
-            json.data.forEach((item) => {
-                const link = document.createElement('a');
-                link.href = `https://kb-prepare.k-r.ch/${api}/${item.id}`;
-                link.target = '_blank';
-                link.innerHTML = item['full-id'];
-
-                const type = api === 'actors' ? item['authority_type'] : api;
-                const result = {
-                    type: type,
-                    id: item['full-id'],
-                    label: item[label],
-                    data: link
-                };
-                results.push(result);
-            });
-        }
-        return results;
-    }
-
-    format(item) {
-        switch (item.type) {
-            case 'person':
-                return {
-                    before: `<persName ref="${item.id}">`,
-                    after: `</persName>`
-                };
-            case 'organisation':
-                return {
-                    before: `<orgName ref="${item.id}">`,
-                    after: `</orgName>`
-                };
-            case 'places':
-                return {
-                    before: `<placeName ref="${item.id}">`,
-                    after: `</placeName>`
-                };
-            case 'terms':
-                return {
-                    before: `<term ref="${item.id}">`,
-                    after: `</term>`
-                };
-        }
-    }
-}
-
 class View {
     
-    constructor(registry, vscode) {
-        this.registry = registry;
+    constructor(vscode) {
         this.vscode = vscode;
 
         const runQuery = document.getElementById('run-query');
@@ -84,12 +17,17 @@ class View {
                     document.getElementById('query').value = message.text;
                     this.lookup();
                     break;
+                case 'results':
+                    document.getElementById('query').value = message.query;
+                    this.outputResults(message.data);
+                    break;
             }
         });
     }
 
     outputResults(items) {
         const results = document.getElementById('results');
+        results.innerHTML = '';
         items.forEach((item) => {
             const tr = document.createElement('tr');
             let td = document.createElement('td');
@@ -99,11 +37,10 @@ class View {
             button.className = 'button';
             button.innerHTML = `<span class="icon"><i class="fas fa-edit"></i></span>`;
             button.addEventListener('click', () => {
-                const format = this.registry.format(item);
                 this.vscode.postMessage({
                     command: 'replace',
-                    before: format.before,
-                    after: format.after
+                    item: item,
+                    register: item.register
                 });
             });
 
@@ -111,9 +48,16 @@ class View {
             td.innerHTML = item.label;
             tr.appendChild(td);
 
-            td = document.createElement('td');
-            tr.appendChild(td);
-            td.appendChild(item.data);
+            if (item.link) {
+                const link = document.createElement('a');
+                link.target = '_blank';
+                link.href = item.link.url;
+                link.innerHTML = item.link.label;
+    
+                td = document.createElement('td');
+                tr.appendChild(td);
+                td.appendChild(link);
+            }
 
             results.appendChild(tr);
         });
@@ -125,15 +69,15 @@ class View {
         const results = document.getElementById('results');
         console.log('Sending query: %s: %s', style, query);
         results.innerHTML = '';
-        this.registry.query(style, query)
-            .then((results) => {
-                this.outputResults(results);
-            });
+        this.vscode.postMessage({
+            'command': 'query',
+            'register': style,
+            'query': query
+        });
     }
 }
 
 (function () {
-    const registry = new KBA();
     const vscode = acquireVsCodeApi();
-    new View(registry, vscode);
+    new View(vscode);
 }());
