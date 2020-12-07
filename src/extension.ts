@@ -3,6 +3,7 @@ import axios from 'axios';
 import { RegistryPanel } from "./panel";
 
 let apiEndpoint: string = 'http://localhost:8080/exist/apps/tei-publisher/';
+let previousOdd: string|undefined;
 
 export function activate(context: vscode.ExtensionContext) {
 	const provider = new RegistryPanel(context.extensionUri);
@@ -47,6 +48,7 @@ function preview() {
 				};
 				if (odd) {
 					params.odd = `${odd.description}.odd`;
+					previousOdd = odd.description;
 				}
 				console.log(`Using ODD ${params.odd}`);
 				const fileName = vscode.workspace.asRelativePath(editor.document.uri);
@@ -95,11 +97,25 @@ async function loadOddList(): Promise<vscode.QuickPickItem[] | null> {
 	});
 	if (response.status === 200) {
 		const odds:vscode.QuickPickItem[] = [];
+		console.log(previousOdd);
 		response.data.forEach((odd: { label: string; name: string; }) => {
-			odds.push({
+			const item:vscode.QuickPickItem = {
 				label: odd.label,
 				description: odd.name
-			});
+			};
+			if (previousOdd && odd.name === previousOdd) {
+				item.picked = true;
+			}
+			odds.push(item);
+		});
+		odds.sort((a, b) => {
+			if (a.picked && !b.picked) {
+				return -1;
+			}
+			if (a.description && b.description) {
+				return a.description.localeCompare(b.description);
+			}
+			return -1;
 		});
 		return odds;
 	}

@@ -102,8 +102,7 @@
             {
               "name": "places",
               "label": "Orte",
-              "plugin": "google",
-              "token": "AIzaSyDH9yO5wGPQlBwOSrfMvDFFpeqGyg949IQ"
+              "plugin": "kba"
             },
             {
               "name": "actors",

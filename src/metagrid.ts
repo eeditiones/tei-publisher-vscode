@@ -15,7 +15,11 @@ export class Metagrid extends Registry {
                 register: 'places',
                 type: 'person',
                 id: item.id,
-                label: item.name
+                label: item.name,
+                link: {
+                    url: item.uri,
+                    label: item.id
+                }
             };
             results.push(result);
         });
