@@ -81,25 +81,33 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 	}
 
     public async query(text: string, register: string, editor?:vscode.TextEditor) {
-        if (editor) {
-            this._currentEditor = editor;
-        }
-        let results:RegistryResult[] = [];
+		if (editor) {
+			this._currentEditor = editor;
+		}
+		vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: `Querying authorities for ${text}`,
+			cancellable: false
+		}, (progress) => {
+			return new Promise(async (resolve) => {
+				let results:RegistryResult[] = [];
 
-        if (register && register !== '') {
-            const plugin = this._registry.get(register);
-            if (plugin) {
-                const result = await plugin.query(text);
-                results = result;
-            }
-        } else {
-            for (let plugin of this._registry.values()) {
-                const result = await plugin.query(text);
-                results = results.concat(result);
-            }
-        }
-        console.log('Results: %o', results);
-        this._view?.webview.postMessage({ command: 'results', data: results, query: text });
+				if (register && register !== '') {
+					const plugin = this._registry.get(register);
+					if (plugin) {
+						const result = await plugin.query(text);
+						results = result;
+					}
+				} else {
+					for (let plugin of this._registry.values()) {
+						const result = await plugin.query(text);
+						results = results.concat(result);
+					}
+				}
+				this._view?.webview.postMessage({ command: 'results', data: results, query: text });
+				resolve(true);
+			});
+		});
     }
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
