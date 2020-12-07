@@ -31,5 +31,42 @@ System | Keybinding
  ### Snippets
 
 Snippet | Shortcut (Mac/other)
----------|----------|---------
+---------|----------
  Insert `<foreign>` | cmd-shift-f / ctrl-shift-f
+
+## Configuration
+
+### TEI Publisher instance
+
+The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL the extension will communicate with to retrieve HTML previews. For example, to use your local TEI Publisher instance, set this to `http://localhost:8080/exist/apps/tei-publisher`.
+
+### API Connectors
+
+The extension supports various authorities to query for entities:
+
+1. Karl Barth Archiv, Basel
+2. Metagrid
+3. Google Places
+
+You can define a different connector for each entity type. The configuration is a JSON snippet like below:
+
+```json
+"teipublisher.apiList": [
+    {
+        "name": "places",
+        "label": "Orte",
+        "plugin": "google",
+        "token": "my-private-token-registered-with-google"
+    },
+    {
+        "name": "actors",
+        "label": "Akteure",
+        "plugin": "metagrid"
+    },
+    {
+        "name": "terms",
+        "label": "Sachen",
+        "plugin": "kba"
+    }
+]
+```

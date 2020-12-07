@@ -12,7 +12,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:xml"
+    "onLanguage:xml",
+    "onCommand:teipublisher.entityView"
   ],
   "extensionDependencies": [
     "redhat.vscode-xml"
@@ -79,6 +80,10 @@
       "type": "object",
       "title": "TEI Publisher Extension configuration",
       "properties": {
+        "teipublisher.endpoint": {
+          "type": "string",
+          "default": "http://localhost:8080/exist/apps/kb"
+        },
         "teipublisher.apiList": {
           "type": "array",
           "scope": "application",
@@ -97,7 +102,8 @@
             {
               "name": "places",
               "label": "Orte",
-              "plugin": "kba"
+              "plugin": "google",
+              "token": "AIzaSyDH9yO5wGPQlBwOSrfMvDFFpeqGyg949IQ"
             },
             {
               "name": "actors",

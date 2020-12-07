@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 import { RegistryPanel } from "./panel";
 
+let apiEndpoint: string = 'http://localhost:8080/exist/apps/tei-publisher/';
+
 export function activate(context: vscode.ExtensionContext) {
 	const provider = new RegistryPanel(context.extensionUri);
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider(RegistryPanel.viewType, provider));
@@ -18,6 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
+
+	const endpoint:string|undefined = vscode.workspace.getConfiguration('teipublisher').get('endpoint');
+	if (endpoint) {
+		apiEndpoint = endpoint;
+	}
 }
 
 // this method is called when your extension is deactivated
@@ -36,11 +43,12 @@ function preview() {
 			.then((odd) => {
 				const tei = editor.document.getText();
 				const params: { base:string, odd?: string } = {
-					base: "http://localhost:8080/exist/apps/kb/"
+					base: `${apiEndpoint}/`
 				};
 				if (odd) {
 					params.odd = `${odd.description}.odd`;
 				}
+				console.log(`Using ODD ${params.odd}`);
 				const fileName = vscode.workspace.asRelativePath(editor.document.uri);
 				vscode.window.withProgress({
 					location: vscode.ProgressLocation.Notification,
@@ -48,7 +56,7 @@ function preview() {
 					cancellable: false
 				}, (progress) => {
 					return new Promise((resolve, reject) => {
-						axios.post('http://localhost:8080/exist/apps/kb/api/preview', tei, {
+						axios.post(`${apiEndpoint}/api/preview`, tei, {
 							headers: {
 								"Content-Type": "application/xml",
 								"Origin": "http://localhost:8080"
@@ -68,6 +76,10 @@ function preview() {
 							);
 							panel.webview.html = response.data;
 							resolve();
+						}).catch((error) => {
+							console.log(error.response.data);
+							vscode.window.showErrorMessage(`The request failed: ${error.response.data.description}`);
+							reject();
 						});
 					});
 				});
@@ -76,7 +88,7 @@ function preview() {
 }
 
 async function loadOddList(): Promise<vscode.QuickPickItem[] | null> {
-	const response = await axios.get('http://localhost:8080/exist/apps/kb/api/odd', {
+	const response = await axios.get(`${apiEndpoint}/api/odd`, {
 		headers: {
 			"Origin": "http://localhost:8080"
 		}
