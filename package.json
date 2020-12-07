@@ -2,8 +2,11 @@
   "name": "tei-publisher-vscode",
   "displayName": "tei-publisher-vscode",
   "description": "Visual Studio Code extension to support TEI editing",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/karl-barth/kb-vscode.git"
+  },
   "publisher": "eXist-db",
-  "repository": "https://gitlab.com/karl-barth/kb-vscode.git",
   "version": "0.0.2",
   "engines": {
     "vscode": "^1.51.0"

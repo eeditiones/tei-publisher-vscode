@@ -77,7 +77,7 @@ function preview() {
 								}
 							);
 							panel.webview.html = response.data;
-							resolve();
+							resolve(true);
 						}).catch((error) => {
 							console.log(error.response.data);
 							vscode.window.showErrorMessage(`The request failed: ${error.response.data.description}`);
