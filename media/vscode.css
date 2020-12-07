@@ -85,3 +85,16 @@ input:not([type='checkbox']), textarea {
 input::placeholder, textarea::placeholder {
 	color: var(--vscode-input-placeholderForeground);
 }
+
+.toolbar {
+	display: flex;
+	margin-bottom: 1em;
+}
+
+#run-query {
+	width: 64px;
+}
+
+#results td:nth-child(1) {
+	padding-right: 4px;
+}

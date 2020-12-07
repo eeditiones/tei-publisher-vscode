@@ -4,74 +4,27 @@ import { Metagrid } from "./metagrid";
 import { GooglePlaces } from "./gplaces";
 import { Registry, RegistryResult } from './registry';
 
-export class RegistryPanel {
+export class RegistryPanel implements vscode.WebviewViewProvider {
 
-	public static currentPanel: RegistryPanel | undefined;
-	public static readonly viewType = 'entityView';
+	public currentPanel: RegistryPanel | undefined;
+	public static readonly viewType = 'teipublisher.entityView';
 
 	private _registry:Map<string, Registry> = new Map();
 
-	private readonly _panel: vscode.WebviewPanel;
-	private readonly _extensionUri: vscode.Uri;
-	private _disposables: vscode.Disposable[] = [];
+    private _view?: vscode.WebviewView;
 	private _currentEditor: vscode.TextEditor | undefined = undefined;
 
-	public static createOrShow(extensionUri: vscode.Uri) {
-		// If we already have a panel, show it.
-		if (RegistryPanel.currentPanel) {
-			RegistryPanel.currentPanel._panel.reveal(vscode.ViewColumn.Two);
-			return RegistryPanel.currentPanel;
-		}
+    public resolveWebviewView(webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext, token: vscode.CancellationToken) {
+        this._view = webviewView;
+        webviewView.webview.options = {
+            enableScripts: true,
+            // And restrict the webview to only loading content from our extension's `media` directory.
+            localResourceRoots: [vscode.Uri.joinPath(this._extensionUri, 'media')]
+        };
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-		// Otherwise, create a new panel.
-		const panel = vscode.window.createWebviewPanel(
-			RegistryPanel.viewType,
-			'TEI Entity Lookup',
-			vscode.ViewColumn.Two,
-			{
-				// Enable javascript in the webview
-				enableScripts: true,
-
-				// And restrict the webview to only loading content from our extension's `media` directory.
-				localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')]
-			}
-		);
-
-		RegistryPanel.currentPanel = new RegistryPanel(panel, extensionUri);
-		return RegistryPanel.currentPanel;
-	}
-
-	public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		RegistryPanel.currentPanel = new RegistryPanel(panel, extensionUri);
-	}
-
-	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		this._panel = panel;
-		this._extensionUri = extensionUri;
-		
-		this.loadPlugins();
-
-		// Set the webview's initial html content
-		// update
-		this._panel.webview.html = this._getHtmlForWebview(panel.webview);
-
-		// Listen for when the panel is disposed
-		// This happens when the user closes the panel or when the panel is closed programatically
-		this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-		// Update the content based on view changes
-		this._panel.onDidChangeViewState(
-			e => {
-				if (this._panel.visible) {
-					// update
-				}
-			},
-			null,
-			this._disposables
-		);
-
-		// Handle messages from the webview
-		this._panel.webview.onDidReceiveMessage(
+        // Handle messages from the webview
+		webviewView.webview.onDidReceiveMessage(
 			message => {
 				switch (message.command) {
 					case 'replace':
@@ -88,11 +41,14 @@ export class RegistryPanel {
                         this.query(message.query, message.register);
 						break;
 				}
-			},
-			null,
-			this._disposables
+			}
 		);
-	}
+    }
+
+	constructor(private readonly _extensionUri: vscode.Uri) {
+		this.loadPlugins();
+    }
+    
 
 	private loadPlugins() {
 		const configs:any[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
@@ -135,22 +91,8 @@ export class RegistryPanel {
             }
         }
         console.log('Results: %o', results);
-        this._panel.webview.postMessage({ command: 'results', data: results, query: text });
+        this._view?.webview.postMessage({ command: 'results', data: results, query: text });
     }
-
-	public dispose() {
-		RegistryPanel.currentPanel = undefined;
-
-		// Clean up our resources
-		this._panel.dispose();
-
-		while (this._disposables.length) {
-			const x = this._disposables.pop();
-			if (x) {
-				x.dispose();
-			}
-		}
-	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Local path to main script run in the webview
@@ -159,48 +101,35 @@ export class RegistryPanel {
 		// And the uri we use to load this script in the webview
 		const scriptUri = webview.asWebviewUri(scriptPathOnDisk);
 
-		// Local path to css styles
-		const styleResetPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css');
-		const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css');
-
 		// Uri to load styles into webview
-		const stylesResetUri = webview.asWebviewUri(styleResetPath);
-		const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-		
+		const stylesResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
+		const stylesMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
+		const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'codicon.css'));
+		const codiconsFontUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'codicon.ttf'));
+
 		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptUri}; font-src ${codiconsFontUri}; style-src ${codiconsUri} ${webview.cspSource};">
+				<link href="${codiconsUri}" rel="stylesheet">
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
-				<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 				<title>TEI Publisher Entity Lookup</title>
 			</head>
 			<body>
-				<h1 class="title is-5">Karl Barth Edition</h1>
-				<div class="field has-addons">
-                    <div class="control">
-                        <span class="select">
-                            <select id="api-list">
-								<option value=''>Alle</option>
-								${ this._getApiOptions() }
-                            </select>
-                        </span>
-                    </div>
-                    <div class="control is-expanded">
-                        <input id="query" class="input" type="text" placeholder="Suchtext">
-                    </div>
-                    <div class="control">
-                        <button id="run-query" class="button is-info">
-                            <span class="icon">
-                                <i class="fas fa-search"></i>
-                            </span>
-                        </button>
-                    </div>
+				<div class="toolbar">
+                    <select id="api-list">
+                        <option value=''>Alle</option>
+                        ${ this._getApiOptions() }
+                    </select>
+                    <input id="query" class="input" type="text" placeholder="Suchtext">
+                    <button id="run-query" class="button is-info">
+                        <i class="codicon codicon-search"></i>
+                    </button>
 				</div>
-				<table class="table is-fullwidth is-striped">
+				<table class="table">
                     <tbody id="results"></tbody>
 				</table>
 				<script src="${scriptUri}"></script>

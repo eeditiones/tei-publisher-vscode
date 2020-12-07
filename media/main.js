@@ -32,10 +32,9 @@ class View {
             const tr = document.createElement('tr');
             let td = document.createElement('td');
             tr.appendChild(td);
-            const button = document.createElement('a');
+            const button = document.createElement('button');
             td.appendChild(button);
-            button.className = 'button';
-            button.innerHTML = `<span class="icon"><i class="fas fa-edit"></i></span>`;
+            button.innerHTML = `<i class="codicon codicon-add"></i>`;
             button.addEventListener('click', () => {
                 this.vscode.postMessage({
                     command: 'replace',

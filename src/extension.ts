@@ -3,13 +3,14 @@ import axios from 'axios';
 import { RegistryPanel } from "./panel";
 
 export function activate(context: vscode.ExtensionContext) {
+	const provider = new RegistryPanel(context.extensionUri);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(RegistryPanel.viewType, provider));
 	context.subscriptions.push(
 		vscode.commands.registerCommand('teipublisher.lookup', () => {
 			const editor = vscode.window.activeTextEditor;
 			if (editor && !editor.selection.isEmpty) {
 				const selected = editor.document.getText(editor.selection);
-				const view = RegistryPanel.createOrShow(context.extensionUri);
-				view.query(selected, '', editor);
+				provider.query(selected, '', editor);
 			}
 		})
 	);
@@ -17,8 +18,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
-
-	RegistryPanel.createOrShow(context.extensionUri);
 }
 
 // this method is called when your extension is deactivated

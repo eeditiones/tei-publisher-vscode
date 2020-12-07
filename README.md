@@ -17,18 +17,19 @@ System | Keybinding
 
 ## Entity Markup
 
-Look up an entity in a register database.
+The extension installs a new view, _TEI Entity Explorer_, into the sidebar. To look up an entity, select some text within an XML document in the editor and press the configured keybinding. The selected string will be copied into the view's search input box and a search is triggered.
+
+To apply one of the available entities to your XML, click on the + button to the left of it. Depending on the entity type, this will enclose the selected text into an appropriate TEI tag (persName, placeName, term ...).
 
 System | Keybinding
 ---------|----------|---------
  mac | cmd-shift-e
  other | ctrl-shift-e
 
+![TEI Entity Explorer](media/vscode-entity-explorer.png)
+
  ## Snippets
 
-
-Column A | Column B | Column C
+Snippet | Shortcut (Mac/other)
 ---------|----------|---------
- A1 | B1 | C1
- A2 | B2 | C2
- A3 | B3 | C3
+ Insert `<foreign>` | cmd-shift-f / ctrl-shift-f
