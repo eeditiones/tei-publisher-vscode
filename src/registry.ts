@@ -14,8 +14,6 @@ export interface RegistryResult {
     type: string,
     id: string,
     label: string,
-    link?: {
-        url: string,
-        label: string
-    }
+    link?: string,
+    details?: string
 };

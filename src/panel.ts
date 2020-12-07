@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import { KBA } from "./kba";
-import { Metagrid } from "./metagrid";
-import { GooglePlaces } from "./gplaces";
+import { KBA } from "./connectors/kba";
+import { Metagrid } from "./connectors/metagrid";
+import { GooglePlaces } from "./connectors/gplaces";
+import { GND } from "./connectors/gnd";
 import { Registry, RegistryResult } from './registry';
 
 export class RegistryPanel implements vscode.WebviewViewProvider {
@@ -64,6 +65,9 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 				case 'google':
 					registry = new GooglePlaces(config);
 					break;
+				case 'gnd':
+					registry = new GND(config);
+					break;
 				default:
 					registry = new Metagrid(config);
 					break;
@@ -75,7 +79,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 	public show() {
 		this._view?.show(true);
 	}
-	
+
     public async query(text: string, register: string, editor?:vscode.TextEditor) {
         if (editor) {
             this._currentEditor = editor;

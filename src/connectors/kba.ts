@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "./registry";
+import { Registry, RegistryResult } from "../registry";
 
 export class KBA extends Registry {
 
@@ -30,10 +30,7 @@ export class KBA extends Registry {
                 register: this._register,
                 id: item['full-id'],
                 label: item[label],
-                link: {
-                    url: `https://kb-prepare.k-r.ch/${this._register}/${item.id}`,
-                    label: item['full-id']
-                }
+                link: `https://kb-prepare.k-r.ch/${this._register}/${item.id}`
             };
             results.push(result);
         });

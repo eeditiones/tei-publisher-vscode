@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "./registry";
+import { Registry, RegistryResult } from "../registry";
 
 export class GooglePlaces extends Registry {
 
@@ -24,10 +24,7 @@ export class GooglePlaces extends Registry {
                 register: 'places',
                 id: item['place_id'],
                 label: item.formatted_address,
-                link: {
-                    url: `https://www.google.com/maps/place/${item.geometry.location.lat},${item.geometry.location.lng}`,
-                    label: 'Map'
-                }
+                link: `https://www.google.com/maps/place/${item.geometry.location.lat},${item.geometry.location.lng}`
             };
             results.push(result);
         });

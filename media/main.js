@@ -44,20 +44,22 @@ class View {
             });
 
             td = document.createElement('td');
-            td.innerHTML = item.label;
-            tr.appendChild(td);
-
             if (item.link) {
                 const link = document.createElement('a');
                 link.target = '_blank';
-                link.href = item.link.url;
-                link.innerHTML = item.link.label;
-    
-                td = document.createElement('td');
-                tr.appendChild(td);
+                link.href = item.link;
+                link.innerHTML = item.label;
                 td.appendChild(link);
+            } else {
+                td.innerHTML = item.label;
             }
+            tr.appendChild(td);
 
+            if (item.details) {
+                td = document.createElement('td');
+                td.innerHTML = item.details;
+                tr.appendChild(td);
+            }
             results.appendChild(tr);
         });
     }

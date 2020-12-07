@@ -95,6 +95,10 @@ input::placeholder, textarea::placeholder {
 	width: 64px;
 }
 
+#results td {
+	vertical-align: top;
+}
+
 #results td:nth-child(1) {
 	padding-right: 4px;
 }

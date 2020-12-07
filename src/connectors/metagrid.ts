@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "./registry";
+import { Registry, RegistryResult } from "../registry";
 
 export class Metagrid extends Registry {
 
@@ -16,10 +16,7 @@ export class Metagrid extends Registry {
                 type: 'person',
                 id: item.id,
                 label: item.name,
-                link: {
-                    url: item.uri,
-                    label: item.id
-                }
+                link: item.uri
             };
             results.push(result);
         });
