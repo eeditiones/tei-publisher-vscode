@@ -17,6 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
+
+	RegistryPanel.createOrShow(context.extensionUri);
 }
 
 // this method is called when your extension is deactivated

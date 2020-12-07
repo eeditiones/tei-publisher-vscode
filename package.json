@@ -40,7 +40,21 @@
         "command": "teipublisher.preview",
         "key": "ctrl-shift-a",
         "mac": "cmd-shift-a"
+      },
+      {
+        "command": "editor.action.insertSnippet",
+        "key": "ctrl-shift-f",
+        "mac": "cmd-shift-f",
+        "args": {
+          "name": "foreign"
+        }
       }
+    ],
+    "snippets": [
+        {
+            "language": "xml",
+            "path": "./snippets/tei.json"
+        }
     ],
     "configuration": {
       "type": "object",

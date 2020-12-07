@@ -1,0 +1,7 @@
+{
+	"foreign": {
+		"prefix": "fo",
+		"body": "<foreign xml:lang=\"${1:lat}\">${0:$TM_SELECTED_TEXT}</foreign>",
+		"description": "Create tei:foreign element"
+    }
+}
