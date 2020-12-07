@@ -72,6 +72,10 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		});
 	}
 
+	public show() {
+		this._view?.show(true);
+	}
+	
     public async query(text: string, register: string, editor?:vscode.TextEditor) {
         if (editor) {
             this._currentEditor = editor;

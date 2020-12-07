@@ -12,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.lookup', () => {
 			const editor = vscode.window.activeTextEditor;
 			if (editor && !editor.selection.isEmpty) {
+				provider.show();
 				const selected = editor.document.getText(editor.selection);
 				provider.query(selected, '', editor);
 			}
