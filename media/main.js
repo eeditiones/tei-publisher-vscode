@@ -60,6 +60,11 @@ class View {
                 td.innerHTML = item.details;
                 tr.appendChild(td);
             }
+
+            td = document.createElement('td');
+            td.innerHTML = item.register;
+            tr.appendChild(td);
+            
             results.appendChild(tr);
         });
     }
