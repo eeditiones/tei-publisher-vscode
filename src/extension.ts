@@ -23,10 +23,16 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
 
+	vscode.workspace.onDidChangeConfiguration(() => configure(provider));
+	configure(provider);
+}
+
+function configure(provider: RegistryPanel) {
 	const endpoint:string|undefined = vscode.workspace.getConfiguration('teipublisher').get('endpoint');
 	if (endpoint) {
 		apiEndpoint = endpoint;
 	}
+	provider.configure();
 }
 
 // this method is called when your extension is deactivated

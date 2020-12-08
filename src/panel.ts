@@ -47,15 +47,15 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
     }
 
 	constructor(private readonly _extensionUri: vscode.Uri) {
-		this.loadPlugins();
     }
     
 
-	private loadPlugins() {
+	public configure() {
 		const configs:any[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
 		if (!configs) {
 			return;
 		}
+		this._registry.clear();
 		configs.forEach((config) => {
 			let registry;
 			switch (config.plugin) {
