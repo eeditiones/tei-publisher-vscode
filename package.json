@@ -16,7 +16,11 @@
     "Other"
   ],
   "keywords": [
-    "digital humanities", "TEI", "TEI Publisher", "text encoding", "XML"
+    "digital humanities",
+    "TEI",
+    "TEI Publisher",
+    "text encoding",
+    "XML"
   ],
   "icon": "media/logo.png",
   "activationEvents": [
@@ -83,11 +87,13 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "TEI Publisher Extension configuration",
+      "title": "TEI Publisher",
       "properties": {
         "teipublisher.endpoint": {
           "type": "string",
-          "default": "http://localhost:8080/exist/apps/kb"
+          "format": "uri",
+          "default": "http://localhost:8080/exist/apps/kb",
+          "description": "Defines the TEI Publisher instance (or an application generated from TEI Publisher) which will be used to preview TEI"
         },
         "teipublisher.apiList": {
           "type": "array",
@@ -95,29 +101,40 @@
           "items": {
             "type": "object",
             "properties": {
-              "label": {
-                "type": "string"
+              "name": {
+                "type": "string",
+                "description": "The name of the register this plugin is configured for. Plugins may support different registers, but 'places', 'actors' and 'terms' are common."
               },
-              "url": {
-                "type": "string"
+              "label": {
+                "type": "string",
+                "description": "A label to show to the user in the dropdown box"
+              },
+              "plugin": {
+                "type": "string",
+                "description": "Name of the plugin to use"
               }
             }
           },
           "default": [
             {
               "name": "places",
-              "label": "Orte",
-              "plugin": "kbga"
+              "label": "Places",
+              "plugin": "gnd"
             },
             {
-              "name": "actors",
-              "label": "Akteure",
-              "plugin": "kbga"
+              "name": "people",
+              "label": "People",
+              "plugin": "gnd"
             },
             {
               "name": "terms",
-              "label": "Sachen",
-              "plugin": "kbga"
+              "label": "Terms",
+              "plugin": "gnd"
+            },
+            {
+              "name": "organisations",
+              "label": "Organisations",
+              "plugin": "gnd"
             }
           ]
         }
