@@ -66,7 +66,7 @@ You can define a different connector for each entity type. The configuration is 
         "token": "my-private-token-registered-with-google"
     },
     {
-        "name": "actors",
+        "name": "people",
         "label": "Akteure",
         "plugin": "gnd"
     },
