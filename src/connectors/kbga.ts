@@ -3,9 +3,18 @@ import { Registry, RegistryResultItem } from "../registry";
 
 export class KBGA extends Registry {
 
+    static registers = ['people', 'terms', 'places'];
+
     async query(key:string) {
         const results:RegistryResultItem[] = [];
-        const url = `https://kb-prepare.k-r.ch/api/${this._register}?search=${encodeURIComponent(key)}`;
+        if (!KBGA.registers.includes(this._register)) {
+            return {
+                totalItems: 0,
+                items: []
+            };
+        }
+        const register = this._register === 'people' ? 'actors' : this._register;
+        const url = `https://kb-prepare.k-r.ch/api/${register}?search=${encodeURIComponent(key)}`;
         console.log(url);
         const response = await axios.get(url);
         if (response.status !== 200) {
@@ -28,7 +37,7 @@ export class KBGA extends Registry {
                 break;
         }
         json.data.forEach((item:any) => {
-            const type = this._register === 'actors' ? item['authority_type'] : this._register;
+            const type = this._register === 'people' ? item['authority_type'] : this._register;
             const result:RegistryResultItem = {
                 type: type,
                 register: this._register,

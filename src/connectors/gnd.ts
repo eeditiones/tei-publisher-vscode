@@ -1,11 +1,29 @@
 import axios from 'axios';
 import { Registry, RegistryResultItem } from "../registry";
 
+/**
+ * Uses https://lobid.org to query the German GND
+ */
 export class GND extends Registry {
 
     async query(key:string) {
         const results:RegistryResultItem[] = [];
-        const response = await axios.get(`https://lobid.org/gnd/search?q=${encodeURIComponent(key)}&filter=%2B%28type%3APerson%29&format=json&size=100`);
+        let filter;
+        switch (this._register) {
+            case 'places':
+                filter = 'PlaceOrGeographicName';
+                break;
+            case 'terms':
+                filter = 'SubjectHeading';
+                break;
+            case 'organisations':
+                filter = 'CorporateBody';
+                break;
+            default:
+                filter = 'Person';
+                break;
+        }
+        const response = await axios.get(`https://lobid.org/gnd/search?q=${encodeURIComponent(key)}&filter=%2B%28type%3A${filter}%29&format=json&size=100`);
         if (response.status !== 200) {
             return {
                 totalItems: 0,
@@ -31,7 +49,16 @@ export class GND extends Registry {
     }
 
     format(item: RegistryResultItem) {
-        return `<persName ref="gnd-${item.id}">$TM_SELECTED_TEXT</persName>`;
+        switch (this._register) {
+            case 'people':
+                return `<persName ref="gnd-${item.id}">$TM_SELECTED_TEXT</persName>`;
+            case 'organisations':
+                return `<orgName ref="gnd-${item.id}">$TM_SELECTED_TEXT</orgName>`;
+            case 'places':
+                return `<placeName ref="gnd-${item.id}">$TM_SELECTED_TEXT</placeName>`;
+            case 'terms':
+                return `<term ref="gnd-${item.id}">$TM_SELECTED_TEXT</term>`;
+        }
     }
 
     _details(item: any) {

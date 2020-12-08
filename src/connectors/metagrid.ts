@@ -5,7 +5,7 @@ export class Metagrid extends Registry {
 
     async query(key:string) {
         const results:RegistryResultItem[] = [];
-        const url = `https://api.metagrid.ch/search/${this._register}?query=${encodeURIComponent(key)}`;
+        const url = `https://api.metagrid.ch/search/person?query=${encodeURIComponent(key)}`;
         console.log(url);
         const response = await axios.get(url);
         if (response.status !== 200) {
@@ -32,10 +32,10 @@ export class Metagrid extends Registry {
     }
 
     format(item: RegistryResultItem) {
-        switch (item.type) {
-            case 'person':
+        switch (this._register) {
+            case 'people':
                 return `<persName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</persName>`;
-            case 'organisation':
+            case 'organisations':
                 return `<orgName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</orgName>`;
             case 'places':
                 return `<placeName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</placeName>`;
