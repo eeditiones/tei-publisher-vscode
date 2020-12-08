@@ -45,7 +45,7 @@ The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL
 
 ### API Connectors
 
-The extension supports various authorities to query for entities (plugin name in parentheses):
+The extension supports various authorities to query for entities:
 
 
 Authority | Plugin name | Supported register types | Notes
