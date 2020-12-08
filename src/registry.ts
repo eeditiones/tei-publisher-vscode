@@ -5,15 +5,20 @@ export abstract class Registry {
         this._register = config.name;
     }
 
-    abstract query(key:string): Promise<RegistryResult[]>;
-    abstract format(item: RegistryResult): string | undefined;
+    abstract query(key:string): Promise<RegistryResult>;
+    abstract format(item: RegistryResultItem): string | undefined;
 }
 
-export interface RegistryResult {
-    register: string,
-    type: string,
-    id: string,
-    label: string,
-    link?: string,
-    details?: string
+export interface RegistryResultItem {
+    register: string;
+    type: string;
+    id: string;
+    label: string;
+    link?: string;
+    details?: string;
 };
+
+export interface RegistryResult {
+    totalItems: number;
+    items: RegistryResultItem[];
+}

@@ -1,14 +1,18 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "../registry";
+import { Registry, RegistryResultItem } from "../registry";
 
 export class KBA extends Registry {
 
     async query(key:string) {
-        const results:RegistryResult[] = [];
-        console.log('querying %s with %s', this._register, key);
-        const response = await axios.get(`https://kb-prepare.k-r.ch/api/${this._register}?search=${encodeURIComponent(key)}`);
+        const results:RegistryResultItem[] = [];
+        const url = `https://kb-prepare.k-r.ch/api/${this._register}?search=${encodeURIComponent(key)}`;
+        console.log(url);
+        const response = await axios.get(url);
         if (response.status !== 200) {
-            return results;
+            return {
+                totalItems: 0,
+                items: []
+            };
         }
         const json:any = response.data;
         let label: string;
@@ -25,7 +29,7 @@ export class KBA extends Registry {
         }
         json.data.forEach((item:any) => {
             const type = this._register === 'actors' ? item['authority_type'] : this._register;
-            const result:RegistryResult = {
+            const result:RegistryResultItem = {
                 type: type,
                 register: this._register,
                 id: item['full-id'],
@@ -34,10 +38,13 @@ export class KBA extends Registry {
             };
             results.push(result);
         });
-        return results;
+        return {
+            totalItems: json.meta.pagination.total,
+            items: results
+        };
     }
 
-    format(item: RegistryResult) {
+    format(item: RegistryResultItem) {
         switch (item.type) {
             case 'person':
                 return `<persName ref="${item.id}">$TM_SELECTED_TEXT</persName>`;

@@ -1,17 +1,22 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "../registry";
+import { Registry, RegistryResultItem } from "../registry";
 
 export class Metagrid extends Registry {
 
     async query(key:string) {
-        const results:RegistryResult[] = [];
-        const response = await axios.get(`https://api.metagrid.ch/search/${this._register}?query=${encodeURIComponent(key)}`);
+        const results:RegistryResultItem[] = [];
+        const url = `https://api.metagrid.ch/search/${this._register}?query=${encodeURIComponent(key)}`;
+        console.log(url);
+        const response = await axios.get(url);
         if (response.status !== 200) {
-            return results;
+            return {
+                totalItems: 0,
+                items: []
+            };
         }
         const json:any = response.data;
         json.concordances.forEach((item:any) => {
-            const result:RegistryResult = {
+            const result:RegistryResultItem = {
                 register: 'places',
                 type: 'person',
                 id: item.id,
@@ -20,10 +25,13 @@ export class Metagrid extends Registry {
             };
             results.push(result);
         });
-        return results;
+        return {
+            totalItems: json.concordances.length,
+            items: results
+        };
     }
 
-    format(item: RegistryResult) {
+    format(item: RegistryResultItem) {
         switch (item.type) {
             case 'person':
                 return `<persName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</persName>`;

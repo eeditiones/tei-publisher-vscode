@@ -1,18 +1,20 @@
 import axios from 'axios';
-import { stringify } from 'querystring';
-import { Registry, RegistryResult } from "../registry";
+import { Registry, RegistryResultItem } from "../registry";
 
 export class GND extends Registry {
 
     async query(key:string) {
-        const results:RegistryResult[] = [];
+        const results:RegistryResultItem[] = [];
         const response = await axios.get(`https://lobid.org/gnd/search?q=${encodeURIComponent(key)}&filter=%2B%28type%3APerson%29&format=json&size=100`);
         if (response.status !== 200) {
-            return results;
+            return {
+                totalItems: 0,
+                items: []
+            };
         }
         const json:any = response.data;
         json.member.forEach((item:any) => {
-            const result:RegistryResult = {
+            const result:RegistryResultItem = {
                 type: item.type.join(','),
                 register: this._register,
                 id: item.gndIdentifier,
@@ -22,10 +24,13 @@ export class GND extends Registry {
             };
             results.push(result);
         });
-        return results;
+        return {
+            totalItems: json.totalItems,
+            items: results
+        };
     }
 
-    format(item: RegistryResult) {
+    format(item: RegistryResultItem) {
         return `<persName ref="gnd-${item.id}">$TM_SELECTED_TEXT</persName>`;
     }
 

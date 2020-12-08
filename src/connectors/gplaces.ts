@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Registry, RegistryResult } from "../registry";
+import { Registry, RegistryResultItem } from "../registry";
 
 export class GooglePlaces extends Registry {
 
@@ -11,15 +11,18 @@ export class GooglePlaces extends Registry {
     }
 
     async query(key:string) {
-        const results:RegistryResult[] = [];
+        const results:RegistryResultItem[] = [];
         
         const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(key)}&key=${this.apiKey}`);
         if (response.status !== 200) {
-            return results;
+            return {
+                totalItems: 0,
+                items: []
+            };
         }
         const json:any = response.data;
         json.results.forEach((item:any) => {
-            const result:RegistryResult = {
+            const result:RegistryResultItem = {
                 type: 'place',
                 register: 'places',
                 id: item['place_id'],
@@ -28,10 +31,13 @@ export class GooglePlaces extends Registry {
             };
             results.push(result);
         });
-        return results;
+        return {
+            totalItems: json.results.length,
+            items: results
+        };
     }
 
-    format(item: RegistryResult) {
+    format(item: RegistryResultItem) {
         return `<placeName ref="google-${item.id}">$TM_SELECTED_TEXT</placeName>`;
     }
 }

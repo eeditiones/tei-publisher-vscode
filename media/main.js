@@ -26,9 +26,10 @@ class View {
     }
 
     outputResults(items) {
+        document.getElementById('items').innerHTML = items.totalItems;
         const results = document.getElementById('results');
         results.innerHTML = '';
-        items.forEach((item) => {
+        items.items.forEach((item) => {
             const tr = document.createElement('tr');
             let td = document.createElement('td');
             tr.appendChild(td);
@@ -55,11 +56,11 @@ class View {
             }
             tr.appendChild(td);
 
+            td = document.createElement('td');
             if (item.details) {
-                td = document.createElement('td');
                 td.innerHTML = item.details;
-                tr.appendChild(td);
             }
+            tr.appendChild(td);
 
             td = document.createElement('td');
             td.innerHTML = item.register;

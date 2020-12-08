@@ -47,6 +47,7 @@ The extension supports various authorities to query for entities:
 1. Karl Barth Archiv, Basel
 2. Metagrid
 3. Google Places
+4. GND
 
 You can define a different connector for each entity type. The configuration is a JSON snippet like below:
 
@@ -70,3 +71,12 @@ You can define a different connector for each entity type. The configuration is 
     }
 ]
 ```
+
+## Recommended Extensions
+
+For proper XML editing support, we recommend installing some of the following extensions:
+
+* [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml)
+* [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
+* [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
+* [Language Server and Client for XQuery/eXistdb](https://marketplace.visualstudio.com/items?itemName=eXist-db.existdb-vscode)

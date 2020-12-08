@@ -3,7 +3,7 @@ import { KBA } from "./connectors/kba";
 import { Metagrid } from "./connectors/metagrid";
 import { GooglePlaces } from "./connectors/gplaces";
 import { GND } from "./connectors/gnd";
-import { Registry, RegistryResult } from './registry';
+import { Registry, RegistryResult, RegistryResultItem } from './registry';
 
 export class RegistryPanel implements vscode.WebviewViewProvider {
 
@@ -90,21 +90,27 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 			cancellable: false
 		}, (progress) => {
 			return new Promise(async (resolve) => {
-				let results:RegistryResult[] = [];
-
+				let results:RegistryResultItem[] = [];
+				let totalItems = 0;
 				if (register && register !== '') {
 					const plugin = this._registry.get(register);
 					if (plugin) {
 						const result = await plugin.query(text);
-						results = result;
+						results = result.items;
+						totalItems = result.totalItems;
 					}
 				} else {
 					for (let plugin of this._registry.values()) {
 						const result = await plugin.query(text);
-						results = results.concat(result);
+						totalItems += result.totalItems;
+						results = results.concat(result.items);
 					}
 				}
-				this._view?.webview.postMessage({ command: 'results', data: results, query: text });
+				const data:RegistryResult = {
+					totalItems: totalItems,
+					items: results
+				};
+				this._view?.webview.postMessage({ command: 'results', data: data, query: text });
 				resolve(true);
 			});
 		});
@@ -145,6 +151,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
                         <i class="codicon codicon-search"></i>
                     </button>
 				</div>
+				<div id="status">Found <span id="items">0</span> items.</div>
 				<table class="table">
                     <tbody id="results"></tbody>
 				</table>
