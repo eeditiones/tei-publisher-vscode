@@ -15,6 +15,8 @@ System | Keybinding
  mac | cmd-shift-a
  other | ctrl-shift-a
 
+![Preview Document](media/screen-preview.gif)
+
 ### Entity Markup
 
 The extension installs a new view, _TEI Entity Explorer_, into the sidebar. To look up an entity, select some text within an XML document in the editor and press the configured keybinding. The selected string will be copied into the view's search input box and a search is triggered.
