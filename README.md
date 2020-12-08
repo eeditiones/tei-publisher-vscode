@@ -46,7 +46,7 @@ The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL
 
 The extension supports various authorities to query for entities (plugin name in parentheses):
 
-1. Karl Barth Archiv, Basel (kbga)
+1. Karl Barth-Gesamtausgabe, Basel (kbga)
 2. Metagrid (metagrid)
 3. Google Places (google)
 4. GND (gnd)
