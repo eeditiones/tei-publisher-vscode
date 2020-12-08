@@ -41,7 +41,7 @@ Snippet | Shortcut (Mac/other)
 
 ### TEI Publisher instance
 
-The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL the extension will communicate with to retrieve HTML previews. For example, to use your local TEI Publisher instance, set this to `http://localhost:8080/exist/apps/tei-publisher`.
+The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL the extension will communicate with to retrieve HTML previews. By default this points to a public TEI Publisher instance available on `https://teipublisher.com/exist/apps/tei-publisher`.
 
 ### API Connectors
 
@@ -86,7 +86,17 @@ The `label` property provides the text to be shown to the user in the dropdown.
 
 ## Recommended Extensions
 
-For proper XML editing support, we recommend installing either the [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml) or the [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) extension. Scholary XML is more lightweight and has nice features, but it requires a `<?xml-model?>` processing instruction in every file. The Red Hat extension support catalog files, which allow you to associate an XML namespace with a certain schema.
+For proper XML editing support, we recommend installing either the [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml) or the [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) extension. Scholary XML is more lightweight and has nice features, but it requires a `<?xml-model?>` processing instruction in every file. The Red Hat extension support catalog files, which allow you to associate an XML namespace with a certain schema. For example, a simple `catalog.xml` for all TEI files may look as follows:
+
+```xml
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <uri
+      name="http://www.tei-c.org/ns/1.0"
+      uri="https://tei-c.org/Vault/P5/current/xml/tei/custom/schema/xsd/tei_all.xsd" />
+</catalog>
+```
+
+Store this somewhere and change the `xml.catalogs` setting in vscode to point to it.
 
 Other extensions you might find useful:
 

@@ -7,7 +7,7 @@
     "url": "https://github.com/eeditiones/tei-publisher-vscode.git"
   },
   "publisher": "e-editiones",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "GPL-3.0-or-later",
   "engines": {
     "vscode": "^1.51.0"
@@ -92,7 +92,7 @@
         "teipublisher.endpoint": {
           "type": "string",
           "format": "uri",
-          "default": "http://localhost:8080/exist/apps/kb",
+          "default": "https://teipublisher.com/exist/apps/tei-publisher",
           "description": "Defines the TEI Publisher instance (or an application generated from TEI Publisher) which will be used to preview TEI"
         },
         "teipublisher.apiList": {
