@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Registry, RegistryResultItem } from "../registry";
 
-export class KBA extends Registry {
+export class KBGA extends Registry {
 
     async query(key:string) {
         const results:RegistryResultItem[] = [];

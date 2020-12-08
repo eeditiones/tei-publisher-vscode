@@ -4,10 +4,11 @@
   "description": "Visual Studio Code extension to support TEI editing",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/karl-barth/kb-vscode.git"
+    "url": "https://github.com/eeditiones/tei-publisher-vscode.git"
   },
   "publisher": "eXist-db",
   "version": "0.0.2",
+  "license": "GPL-3.0-or-later",
   "engines": {
     "vscode": "^1.51.0"
   },
@@ -105,17 +106,17 @@
             {
               "name": "places",
               "label": "Orte",
-              "plugin": "kba"
+              "plugin": "kbga"
             },
             {
               "name": "actors",
               "label": "Akteure",
-              "plugin": "kba"
+              "plugin": "kbga"
             },
             {
               "name": "terms",
               "label": "Sachen",
-              "plugin": "kba"
+              "plugin": "kbga"
             }
           ]
         }

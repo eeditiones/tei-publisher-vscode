@@ -42,12 +42,12 @@ The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL
 
 ### API Connectors
 
-The extension supports various authorities to query for entities:
+The extension supports various authorities to query for entities (plugin name in parentheses):
 
-1. Karl Barth Archiv, Basel
-2. Metagrid
-3. Google Places
-4. GND
+1. Karl Barth Archiv, Basel (kbga)
+2. Metagrid (metagrid)
+3. Google Places (google)
+4. GND (gnd)
 
 You can define a different connector for each entity type. The configuration is a JSON snippet like below:
 
@@ -62,12 +62,12 @@ You can define a different connector for each entity type. The configuration is 
     {
         "name": "actors",
         "label": "Akteure",
-        "plugin": "metagrid"
+        "plugin": "gnd"
     },
     {
         "name": "terms",
         "label": "Sachen",
-        "plugin": "kba"
+        "plugin": "kbga"
     }
 ]
 ```

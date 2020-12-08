@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { KBA } from "./connectors/kba";
+import { KBGA } from "./connectors/kbga";
 import { Metagrid } from "./connectors/metagrid";
 import { GooglePlaces } from "./connectors/gplaces";
 import { GND } from "./connectors/gnd";
@@ -59,8 +59,8 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		configs.forEach((config) => {
 			let registry;
 			switch (config.plugin) {
-				case 'kba':
-					registry = new KBA(config);
+				case 'kbga':
+					registry = new KBGA(config);
 					break;
 				case 'google':
 					registry = new GooglePlaces(config);
