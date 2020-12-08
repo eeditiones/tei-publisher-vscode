@@ -1,11 +1,12 @@
 # TEI Publisher Extension for Visual Studio Code
 
-A package to help editors work on TEI files.
+An extension to help editors work on TEI files. 
 
 ## Features
 
 * Preview the currently edited TEI document by sending it to a TEI Publisher instance where it will be transformed to HTML via an existing ODD
-* Look up an entity in a register database
+* Look up an entity in one of the configured authority databases and replace the current selection with a TEI tag corresponding to the entity type
+
 ### Preview
 
 Get an HTML preview of the TEI file currently opened in the editor. The content is sent to a TEI Publisher endpoint and transformed to HTML via an ODD with processing instructions. The extension queries the server for a list of available ODDs and lets you choose one.
@@ -46,10 +47,13 @@ The _teipublisher.endpoint_ configuration property defines the HTTP or HTTPS URL
 
 The extension supports various authorities to query for entities (plugin name in parentheses):
 
-1. Karl Barth-Gesamtausgabe, Basel (kbga)
-2. Metagrid (metagrid)
-3. Google Places (google)
-4. GND (gnd)
+
+Authority | Plugin name | Supported register types | Notes
+---------|----------|---------|------------
+Karl Barth-Gesamtausgabe, Basel | kbga | places, actors, terms |
+GND | gnd | places, actors, organisations, terms |
+Google Places | google | places | Requires an access token
+Metagrid (metagrid) | metagrid | actors |
 
 You can define a different connector for each entity type. The configuration is a JSON snippet like below:
 
@@ -73,6 +77,12 @@ You can define a different connector for each entity type. The configuration is 
     }
 ]
 ```
+
+The `name` property defines the name of the register to search in. It should correspond to one of the supported register types for each authority given in the table above.
+
+The `label` property provides the text to be shown to the user in the dropdown.
+
+`plugin` should correspond to one of the available plugin names given in the table above.
 
 ## Recommended Extensions
 

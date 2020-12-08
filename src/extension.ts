@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (editor && !editor.selection.isEmpty) {
 				provider.show();
 				const selected = editor.document.getText(editor.selection);
-				provider.query(selected, '', editor);
+				provider.query(selected, null, editor);
 			}
 		})
 	);
@@ -23,16 +23,20 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
 
-	vscode.workspace.onDidChangeConfiguration(() => configure(provider));
+	vscode.workspace.onDidChangeConfiguration((ev) => {
+		if (ev.affectsConfiguration('teipublisher')) {
+			configure(provider, ev);
+		}
+	});
 	configure(provider);
 }
 
-function configure(provider: RegistryPanel) {
+function configure(provider: RegistryPanel, ev?: vscode.ConfigurationChangeEvent) {
 	const endpoint:string|undefined = vscode.workspace.getConfiguration('teipublisher').get('endpoint');
 	if (endpoint) {
 		apiEndpoint = endpoint;
 	}
-	provider.configure();
+	provider.configure(ev);
 }
 
 // this method is called when your extension is deactivated

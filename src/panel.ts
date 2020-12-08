@@ -14,7 +14,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 	public static readonly viewType = 'teipublisher.entityView';
 
 	private _registry:Map<string, Registry> = new Map();
-
+	private _currentRegister:string = '';
     private _view?: vscode.WebviewView;
 	private _currentEditor: vscode.TextEditor | undefined = undefined;
 
@@ -31,6 +31,9 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		webviewView.webview.onDidReceiveMessage(
 			message => {
 				switch (message.command) {
+					case 'register':
+						this._currentRegister = message.register;
+						break;
 					case 'replace':
 						if (this._currentEditor) {
 							const editor = this._currentEditor;
@@ -40,7 +43,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 								editor.insertSnippet(new vscode.SnippetString(snippet));
 							}
 						}
-						return;
+						break;
 					case 'query':
                         this.query(message.query, message.register);
 						break;
@@ -53,7 +56,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
     }
     
 
-	public configure() {
+	public configure(ev?: vscode.ConfigurationChangeEvent) {
 		const configs:any[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
 		if (!configs) {
 			return;
@@ -77,15 +80,21 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 			}
 			this._registry.set(config.name, registry);
 		});
+		if (ev && this._view) {
+			this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+		}
 	}
 
 	public show() {
 		this._view?.show(true);
 	}
 
-    public async query(text: string, register: string, editor?:vscode.TextEditor) {
+    public async query(text: string, register: string|null, editor?:vscode.TextEditor) {
 		if (editor) {
 			this._currentEditor = editor;
+		}
+		if (!register) {
+			register = this._currentRegister;
 		}
 		vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
@@ -146,7 +155,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 			<body>
 				<div class="toolbar">
                     <select id="api-list">
-                        <option value=''>Alle</option>
+                        <option value=''>All</option>
                         ${ this._getApiOptions() }
                     </select>
                     <input id="query" class="input" type="text" placeholder="Suchtext">

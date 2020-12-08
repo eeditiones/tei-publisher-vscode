@@ -9,6 +9,14 @@ class View {
             this.lookup();
         });
 
+        const register = document.getElementById('api-list');
+        register.addEventListener('change', (ev) => {
+            this.vscode.postMessage({
+                command: 'register',
+                register: register.value
+            });
+        });
+
         // Handle messages sent from the extension to the webview
         window.addEventListener('message', event => {
             const message = event.data; // The json data that the extension sent
