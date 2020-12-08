@@ -50,10 +50,10 @@ The extension supports various authorities to query for entities (plugin name in
 
 Authority | Plugin name | Supported register types | Notes
 ---------|----------|---------|------------
-Karl Barth-Gesamtausgabe, Basel | kbga | places, actors, terms |
-GND | gnd | places, actors, organisations, terms |
+Karl Barth-Gesamtausgabe, Basel | kbga | places, people, terms |
+GND | gnd | places, people, organisations, terms |
 Google Places | google | places | Requires an access token
-Metagrid (metagrid) | metagrid | actors |
+Metagrid (metagrid) | metagrid | people |
 
 You can define a different connector for each entity type. The configuration is a JSON snippet like below:
 
@@ -86,9 +86,9 @@ The `label` property provides the text to be shown to the user in the dropdown.
 
 ## Recommended Extensions
 
-For proper XML editing support, we recommend installing some of the following extensions:
+For proper XML editing support, we recommend installing either the [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml) or the [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) extension. Scholary XML is more lightweight and has nice features, but it requires a `<?xml-model?>` processing instruction in every file. The Red Hat extension support catalog files, which allow you to associate an XML namespace with a certain schema.
 
-* [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml)
-* [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
-* [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
+Other extensions you might find useful:
+
 * [Language Server and Client for XQuery/eXistdb](https://marketplace.visualstudio.com/items?itemName=eXist-db.existdb-vscode)
+* [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
