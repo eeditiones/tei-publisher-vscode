@@ -38,6 +38,10 @@ function configure(provider: RegistryPanel) {
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
+/**
+ * Preview the document currently open in the editor by sending the
+ * content to a TEI Publisher instance and transforming it to HTML via ODD.
+ */
 function preview() {
 	if (!vscode.window.activeTextEditor) {
 		return;
@@ -99,6 +103,10 @@ function preview() {
 	});
 }
 
+/**
+ * Retrieve a list of available ODDs and return them as quick pick items
+ * for users to select from.
+ */
 function loadOddList(): Promise<vscode.QuickPickItem[] | null> {
 	return new Promise((resolve, reject) => {
 		axios.get(`${apiEndpoint}/api/odd`, {

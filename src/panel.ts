@@ -5,6 +5,9 @@ import { GooglePlaces } from "./connectors/gplaces";
 import { GND } from "./connectors/gnd";
 import { Registry, RegistryResult, RegistryResultItem } from './registry';
 
+/**
+ * Implements the webview for entity lookups.
+ */
 export class RegistryPanel implements vscode.WebviewViewProvider {
 
 	public currentPanel: RegistryPanel | undefined;
