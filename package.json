@@ -15,12 +15,13 @@
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "digital humanities", "TEI", "TEI Publisher", "text encoding", "XML"
+  ],
+  "icon": "media/logo.png",
   "activationEvents": [
     "onLanguage:xml",
     "onCommand:teipublisher.entityView"
-  ],
-  "extensionDependencies": [
-    "redhat.vscode-xml"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -29,7 +30,7 @@
         {
           "id": "teipublisher",
           "title": "TEI Publisher Tools",
-          "icon": "media/logo.png"
+          "icon": "media/logo.svg"
         }
       ]
     },
