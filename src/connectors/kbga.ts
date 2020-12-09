@@ -14,7 +14,7 @@ export class KBGA extends Registry {
             };
         }
         const register = this._register === 'people' ? 'actors' : this._register;
-        const url = `https://meta.karl-barth.ch//api/${register}?search=${encodeURIComponent(key)}`;
+        const url = `https://meta.karl-barth.ch/api/${register}?search=${encodeURIComponent(key)}`;
         console.log(url);
         const response = await axios.get(url);
         if (response.status !== 200) {
