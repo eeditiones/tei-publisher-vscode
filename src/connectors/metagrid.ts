@@ -4,29 +4,32 @@ import { Registry, RegistryResultItem } from "../registry";
 export class Metagrid extends Registry {
 
     async query(key:string) {
+        const query = key.replace(/[^\w\s]+/g, '');
         const results:RegistryResultItem[] = [];
-        const url = `https://api.metagrid.ch/search/person?query=${encodeURIComponent(key)}`;
+        const url = `https://api.metagrid.ch/search?query=${encodeURIComponent(query)}`;
         console.log(url);
         const response = await axios.get(url);
-        if (response.status !== 200) {
+        if (response.status !== 200 || !(response.data && response.data.resources)) {
             return {
                 totalItems: 0,
                 items: []
             };
         }
         const json:any = response.data;
-        json.concordances.forEach((item:any) => {
+        json.resources.forEach((item:any) => {
+            const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
             const result:RegistryResultItem = {
-                register: 'places',
+                register: 'people',
                 type: 'person',
-                id: item.id,
-                label: item.name,
-                link: item.uri
+                id: item.concordance.id,
+                label: name,
+                details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
+                link: item.link.uri
             };
             results.push(result);
         });
         return {
-            totalItems: json.concordances.length,
+            totalItems: json.meta.total,
             items: results
         };
     }

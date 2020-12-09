@@ -3,6 +3,7 @@ import { KBGA } from "./connectors/kbga";
 import { Metagrid } from "./connectors/metagrid";
 import { GooglePlaces } from "./connectors/gplaces";
 import { GND } from "./connectors/gnd";
+import { GeoNames } from "./connectors/geonames";
 import { Registry, RegistryResult, RegistryResultItem } from './registry';
 
 /**
@@ -74,6 +75,9 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 				case 'gnd':
 					registry = new GND(config);
 					break;
+				case 'geonames':
+					registry = new GeoNames(config);
+					break;
 				default:
 					registry = new Metagrid(config);
 					break;
@@ -107,15 +111,23 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 				if (register && register !== '') {
 					const plugin = this._registry.get(register);
 					if (plugin) {
-						const result = await plugin.query(text);
-						results = result.items;
-						totalItems = result.totalItems;
+						try {
+							const result = await plugin.query(text);
+							results = result.items;
+							totalItems = result.totalItems;
+						} catch (e) {
+							console.error('Lookup failed on plugin %s', plugin.constructor.name);
+						}
 					}
 				} else {
 					for (let plugin of this._registry.values()) {
-						const result = await plugin.query(text);
-						totalItems += result.totalItems;
-						results = results.concat(result.items);
+						try {
+							const result = await plugin.query(text);
+							totalItems += result.totalItems;
+							results = results.concat(result.items);
+						} catch (e) {
+							console.error('Lookup failed on plugin %s', plugin.constructor.name);
+						}
 					}
 				}
 				const data:RegistryResult = {

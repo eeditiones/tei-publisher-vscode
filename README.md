@@ -52,7 +52,8 @@ Authority | Plugin name | Supported register types | Notes
 ---------|----------|---------|------------
 Karl Barth-Gesamtausgabe, Basel | kbga | places, people, terms |
 GND | gnd | places, people, organisations, terms |
-Google Places | google | places | Requires an access token
+Geonames | geonames | places | Requires a property "user"
+Google Places | google | places | Requires an access token in property "token"
 Metagrid (metagrid) | metagrid | people |
 
 You can define a different connector for each entity type. The configuration is a JSON snippet like below:
