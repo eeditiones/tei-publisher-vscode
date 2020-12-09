@@ -7,7 +7,7 @@
     "url": "https://github.com/eeditiones/tei-publisher-vscode.git"
   },
   "publisher": "e-editiones",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "GPL-3.0-or-later",
   "engines": {
     "vscode": "^1.51.0"
