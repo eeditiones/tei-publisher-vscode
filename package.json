@@ -108,6 +108,16 @@
           "default": "https://teipublisher.com/exist/apps/tei-publisher",
           "description": "Defines the TEI Publisher instance (or an application generated from TEI Publisher) which will be used to preview TEI"
         },
+        "teipublisher.fontSize": {
+          "type": "string",
+          "default": "1em",
+          "description": "Base font size to use for the preview panel"
+        },
+        "teipublisher.lineHeight": {
+          "type": "integer",
+          "default": 1.42857143,
+          "description": "Base line height to use for the preview panel"
+        },
         "teipublisher.apiList": {
           "type": "array",
           "scope": "application",

@@ -91,7 +91,7 @@ function preview() {
 									enableScripts: true
 								}
 							);
-							panel.webview.html = response.data;
+							panel.webview.html = injectStyles(response.data);
 							resolve(true);
 						}).catch((error) => {
 							console.log(error.response.data);
@@ -102,6 +102,20 @@ function preview() {
 				});
 			});
 	});
+}
+
+function injectStyles(content:string) :string {
+	const config = vscode.workspace.getConfiguration('teipublisher');
+	const fontSize:string|undefined = config.get('fontSize');
+	const lineHeight:string|undefined = config.get('lineHeight');
+	let styles;
+	if (fontSize) {
+		styles = `font-size: ${fontSize};`;
+	}
+	if (lineHeight) {
+		styles += `line-height: ${lineHeight};`;
+	}
+	return content.replace(/<body([^>]+)>/, `<body style="${styles}"$1>`);
 }
 
 /**
