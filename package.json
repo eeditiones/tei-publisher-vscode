@@ -114,7 +114,7 @@
           "description": "Base font size to use for the preview panel"
         },
         "teipublisher.lineHeight": {
-          "type": "integer",
+          "type": "number",
           "default": 1.42857143,
           "description": "Base line height to use for the preview panel"
         },
