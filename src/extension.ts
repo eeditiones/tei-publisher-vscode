@@ -101,9 +101,6 @@ function preview() {
 					});
 				});
 			});
-	})
-	.catch(() => {
-		vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
 	});
 }
 
@@ -111,42 +108,50 @@ function preview() {
  * Retrieve a list of available ODDs and return them as quick pick items
  * for users to select from.
  */
-function loadOddList(): Promise<vscode.QuickPickItem[] | null> {
-	return new Promise((resolve, reject) => {
-		axios.get(`${apiEndpoint}/api/odd`, {
-			headers: {
-				"Origin": "http://localhost:8080"
-			}
-		})
-		.then(response => {
-			if (response.status === 200) {
-				const odds:vscode.QuickPickItem[] = [];
-				response.data.forEach((odd: { label: string; name: string; }) => {
-					const item:vscode.QuickPickItem = {
-						label: odd.label,
-						description: odd.name
-					};
-					if (previousOdd && odd.name === previousOdd) {
-						item.picked = true;
-					}
-					odds.push(item);
-				});
-				odds.sort((a, b) => {
-					if (a.picked && !b.picked) {
+function loadOddList(): Thenable<vscode.QuickPickItem[]> {
+	return vscode.window.withProgress({
+		location: vscode.ProgressLocation.Notification,
+		title: `Retrieving list of ODDs`,
+		cancellable: false
+	}, (progress) => {
+		return new Promise((resolve, reject) => {
+			axios.get(`${apiEndpoint}/api/odd`, {
+				headers: {
+					"Origin": "http://localhost:8080"
+				}
+			})
+			.then(response => {
+				if (response.status === 200) {
+					const odds:vscode.QuickPickItem[] = [];
+					response.data.forEach((odd: { label: string; name: string; }) => {
+						const item:vscode.QuickPickItem = {
+							label: odd.label,
+							description: odd.name
+						};
+						if (previousOdd && odd.name === previousOdd) {
+							item.picked = true;
+						}
+						odds.push(item);
+					});
+					odds.sort((a, b) => {
+						if (a.picked && !b.picked) {
+							return -1;
+						}
+						if (a.description && b.description) {
+							return a.description.localeCompare(b.description);
+						}
 						return -1;
-					}
-					if (a.description && b.description) {
-						return a.description.localeCompare(b.description);
-					}
-					return -1;
-				});
-				resolve(odds);
-			} else {
+					});
+					resolve(odds);
+				} else {
+					vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
+					reject();
+				}
+			})
+			.catch(error => {
+				vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
 				reject();
-			}
-		})
-		.catch(error => {
-			reject();
+			});
 		});
 	});
 }
