@@ -36,6 +36,7 @@ System | Keybinding
 Snippet | Shortcut (Mac/other)
 ---------|----------
  Insert `<foreign>` | cmd-shift-f / ctrl-shift-f
+ Wrap selection with element | cmd-e / ctrl-e
 
 ## Configuration
 

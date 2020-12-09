@@ -61,6 +61,11 @@
           "dark": "./media/menu-icon-dark.svg",
           "light": "./media/menu-icon-light.svg"
         }
+      },
+      {
+        "command": "teipublisher.encloseInTag",
+        "title": "Enclose selected text in tag",
+        "category": "teipublisher"
       }
     ],
     "menus": {
@@ -90,6 +95,11 @@
         "args": {
           "name": "foreign"
         }
+      },
+      {
+        "command": "teipublisher.encloseInTag",
+        "key": "ctrl-e",
+        "mac": "cmd-e"
       }
     ],
     "snippets": [

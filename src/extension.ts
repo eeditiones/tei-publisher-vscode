@@ -23,6 +23,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.preview', preview)
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('teipublisher.encloseInTag', encloseInTag)
+	);
+
 	vscode.workspace.onDidChangeConfiguration((ev) => {
 		if (ev.affectsConfiguration('teipublisher')) {
 			configure(provider, ev);
@@ -167,5 +171,21 @@ function loadOddList(): Thenable<vscode.QuickPickItem[]> {
 				reject();
 			});
 		});
+	});
+}
+
+function encloseInTag() {
+	if (!vscode.window.activeTextEditor) {
+		return;
+	}
+	vscode.window.showInputBox({
+		prompt: 'Wrap selection with element',
+		placeHolder: 'Name of the element'
+	})
+	.then(tag => {
+		if (tag) {
+			const snippet = `<${tag}>$TM_SELECTED_TEXT</${tag}>`;
+			vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(snippet));
+		}
 	});
 }
