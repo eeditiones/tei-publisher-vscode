@@ -56,9 +56,22 @@
       {
         "command": "teipublisher.preview",
         "title": "Preview the current document",
-        "category": "teipublisher"
+        "category": "teipublisher",
+        "icon": {
+          "dark": "./media/menu-icon-dark.svg",
+          "light": "./media/menu-icon-light.svg"
+        }
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == xml",
+          "command": "teipublisher.preview",
+          "group": "navigation"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "teipublisher.lookup",
