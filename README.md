@@ -29,7 +29,7 @@ System | Keybinding
  mac | cmd-shift-e
  other | ctrl-shift-e
 
-![TEI Entity Explorer](media/vscode-entity-explorer.png)
+![TEI Entity Explorer](media/screen-entity.gif)
 
  ### Snippets
 
