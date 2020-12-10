@@ -39,6 +39,7 @@ export class KBGA extends Registry {
                 register: this._register,
                 id: item['full-id'],
                 label: item[label],
+                details: item['full-id'],
                 link: `https://meta.karl-barth.ch/${register}/${item.id}`
             };
             results.push(result);
