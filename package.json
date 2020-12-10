@@ -158,25 +158,25 @@
               "name": "places",
               "label": "Places",
               "plugin": "gnd",
-              "template": "<placeName ref=\"${id}\">${0:TM_SELECTED_TEXT}</placeName>"
+              "template": "<placeName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</placeName>"
             },
             {
               "name": "people",
               "label": "People",
               "plugin": "gnd",
-              "template": "<persName ref=\"${id}\">${0:TM_SELECTED_TEXT}</persName>"
+              "template": "<persName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</persName>"
             },
             {
               "name": "terms",
               "label": "Terms",
               "plugin": "gnd",
-              "template": "<term ref=\"${id}\">${0:TM_SELECTED_TEXT}</term>"
+              "template": "<term ref=\"${id}\">${0:$TM_SELECTED_TEXT}</term>"
             },
             {
               "name": "organisations",
               "label": "Organisations",
               "plugin": "gnd",
-              "template": "<orgName ref=\"${id}\">${0:TM_SELECTED_TEXT}</orgName>"
+              "template": "<orgName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</orgName>"
             }
           ]
         }
