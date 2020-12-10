@@ -63,19 +63,28 @@ You can define a different connector for each entity type. The configuration is 
 "teipublisher.apiList": [
     {
         "name": "places",
-        "label": "Orte",
-        "plugin": "google",
-        "token": "my-private-token-registered-with-google"
+        "label": "Places",
+        "plugin": "geonames",
+        "template": "<placeName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</placeName>",
+        "user": "demo"
     },
     {
         "name": "people",
-        "label": "Akteure",
-        "plugin": "gnd"
+        "label": "People",
+        "plugin": "gnd",
+        "template": "<persName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</persName>"
     },
     {
         "name": "terms",
-        "label": "Sachen",
-        "plugin": "kbga"
+        "label": "Terms",
+        "plugin": "kbga",
+        "template": "<term ref=\"${id}\">${0:$TM_SELECTED_TEXT}</term>"
+    },
+    {
+        "name": "organisations",
+        "label": "Organisations",
+        "plugin": "kbga",
+        "template": "<orgName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</orgName>"
     }
 ]
 ```
@@ -85,6 +94,17 @@ The `name` property defines the name of the register to search in. It should cor
 The `label` property provides the text to be shown to the user in the dropdown.
 
 `plugin` should correspond to one of the available plugin names given in the table above.
+
+`template` defines the XML snippet to be inserted. It may reference the following variables returned by the API connector:
+
+Variable | Description
+---------|----------
+ id | Unique ID returned by the API
+ link | A link pointing to a description of the record
+ label | The descriptive label for the item provided by the API 
+ details | Further details on the item returned by the API
+
+Within `template` you can also use vscode snippet parameters, e.g. `$0` to place the cursor at a certain position after inserting the text. `${0:$TM_SELECTED_TEXT}` will either insert the text selection or position the cursor if nothing is selected.
 
 ## Recommended Extensions
 
