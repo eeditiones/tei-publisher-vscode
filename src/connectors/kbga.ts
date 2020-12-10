@@ -3,6 +3,10 @@ import { Registry, RegistryResultItem } from "../registry";
 
 export class KBGA extends Registry {
 
+    get name() {
+        return 'Karl Barth Gesamtausgabe';
+    }
+    
     async query(key:string) {
         const results:RegistryResultItem[] = [];
         const register = this._register === 'people' || this._register === 'organisations' ? 'actors' : this._register;

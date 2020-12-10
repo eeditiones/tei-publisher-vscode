@@ -3,6 +3,10 @@ import { Registry, RegistryResultItem } from "../registry";
 
 export class Metagrid extends Registry {
 
+    get name() {
+        return 'Metagrid';
+    }
+    
     async query(key:string) {
         const query = key.replace(/[^\w\s]+/g, '');
         const results:RegistryResultItem[] = [];

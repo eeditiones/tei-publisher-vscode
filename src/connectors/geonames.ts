@@ -5,6 +5,10 @@ export class GeoNames extends Registry {
 
     private user:string;
 
+    get name() {
+        return 'geonames.org';
+    }
+    
     constructor(config:any) {
         super(config);
         this.user = config.user;

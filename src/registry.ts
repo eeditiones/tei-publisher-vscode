@@ -11,6 +11,11 @@ export abstract class Registry {
     }
 
     /**
+     * Return a descriptive name for the registry
+     */
+    abstract get name(): string;
+
+    /**
      * Query the authority and return a RegistryResult.
      * 
      * @param key the search string
@@ -39,6 +44,12 @@ export abstract class Registry {
                     break;
                 case 'id':
                     replacement = item.id;
+                    break;
+                case 'register':
+                    replacement = this._register;
+                    break;
+                case 'authority':
+                    replacement = this.name;
                     break;
             }
             return replacement || match;

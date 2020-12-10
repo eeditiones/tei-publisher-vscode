@@ -6,6 +6,10 @@ import { Registry, RegistryResultItem } from "../registry";
  */
 export class GND extends Registry {
 
+    get name() {
+        return 'GND';
+    }
+    
     async query(key:string) {
         const results:RegistryResultItem[] = [];
         let filter;

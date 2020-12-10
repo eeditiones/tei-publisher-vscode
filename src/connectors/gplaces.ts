@@ -5,6 +5,10 @@ export class GooglePlaces extends Registry {
 
     private apiKey:string;
 
+    get name() {
+        return 'Google Places';
+    }
+    
     constructor(config:any) {
         super(config);
         this.apiKey = config.token;

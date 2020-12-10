@@ -126,7 +126,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 					const increment = 100 / this._registry.size;
 					for (let plugin of this._registry.values()) {
 						progress.report({
-							message: plugin.constructor.name,
+							message: plugin.name,
 							increment: increment
 						});
 						try {
