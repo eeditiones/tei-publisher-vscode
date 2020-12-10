@@ -17,6 +17,13 @@ class View {
             });
         });
 
+        const input = document.getElementById('query');
+        input.addEventListener('keyup', (ev) => {
+            if (ev.key === 'Enter') {
+                this.lookup();
+            }
+        });
+
         // Handle messages sent from the extension to the webview
         window.addEventListener('message', event => {
             const message = event.data; // The json data that the extension sent
@@ -53,20 +60,23 @@ class View {
             });
 
             td = document.createElement('td');
+            let div = document.createElement('div');
+            td.appendChild(div);
+
             if (item.link) {
                 const link = document.createElement('a');
                 link.target = '_blank';
                 link.href = item.link;
                 link.innerHTML = item.label;
-                td.appendChild(link);
+                div.appendChild(link);
             } else {
-                td.innerHTML = item.label;
+                div.innerHTML = item.label;
             }
-            tr.appendChild(td);
-
-            td = document.createElement('td');
             if (item.details) {
-                td.innerHTML = item.details;
+                div = document.createElement('div');
+                div.className = 'details';
+                div.innerHTML = item.details;
+                td.appendChild(div);
             }
             tr.appendChild(td);
 
