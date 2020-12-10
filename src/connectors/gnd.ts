@@ -33,7 +33,6 @@ export class GND extends Registry {
         const json:any = response.data;
         json.member.forEach((item:any) => {
             const result:RegistryResultItem = {
-                type: item.type.join(','),
                 register: this._register,
                 id: item.gndIdentifier,
                 label: item.preferredName,
@@ -46,19 +45,6 @@ export class GND extends Registry {
             totalItems: json.totalItems,
             items: results
         };
-    }
-
-    format(item: RegistryResultItem) {
-        switch (this._register) {
-            case 'people':
-                return `<persName ref="gnd-${item.id}">$TM_SELECTED_TEXT</persName>`;
-            case 'organisations':
-                return `<orgName ref="gnd-${item.id}">$TM_SELECTED_TEXT</orgName>`;
-            case 'places':
-                return `<placeName ref="gnd-${item.id}">$TM_SELECTED_TEXT</placeName>`;
-            case 'terms':
-                return `<term ref="gnd-${item.id}">$TM_SELECTED_TEXT</term>`;
-        }
     }
 
     _details(item: any) {

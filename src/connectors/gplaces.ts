@@ -23,8 +23,7 @@ export class GooglePlaces extends Registry {
         const json:any = response.data;
         json.results.forEach((item:any) => {
             const result:RegistryResultItem = {
-                type: 'place',
-                register: 'places',
+                register: this._register,
                 id: item['place_id'],
                 label: item.formatted_address,
                 link: `https://www.google.com/maps/place/${item.geometry.location.lat},${item.geometry.location.lng}`
@@ -35,9 +34,5 @@ export class GooglePlaces extends Registry {
             totalItems: json.results.length,
             items: results
         };
-    }
-
-    format(item: RegistryResultItem) {
-        return `<placeName ref="google-${item.id}">$TM_SELECTED_TEXT</placeName>`;
     }
 }

@@ -36,8 +36,11 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 						this._currentRegister = message.register;
 						break;
 					case 'replace':
-						if (this._currentEditor) {
-							const editor = this._currentEditor;
+						let editor = this._currentEditor;
+						if (!editor || !editor.document.isClosed) {
+							editor = vscode.window.activeTextEditor;
+						}
+						if (editor) {
 							const plugin = this._registry.get(message.register);
 							if (plugin) {
 								const snippet = plugin.format(message.item);

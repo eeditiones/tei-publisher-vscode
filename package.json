@@ -25,6 +25,7 @@
   "icon": "media/logo.png",
   "activationEvents": [
     "onLanguage:xml",
+    "onView:teipublisher.entityView",
     "onCommand:teipublisher.entityView"
   ],
   "main": "./dist/extension.js",
@@ -145,6 +146,10 @@
               "plugin": {
                 "type": "string",
                 "description": "Name of the plugin to use"
+              },
+              "template": {
+                "type": "string",
+                "description": "Template string used to construct the TEI element. May reference the ID to be inserted with ${id}, the external link with ${link} or the label with ${label}. It may also contain vscode snippet placeholders like ${0}."
               }
             }
           },
@@ -152,22 +157,26 @@
             {
               "name": "places",
               "label": "Places",
-              "plugin": "gnd"
+              "plugin": "gnd",
+              "template": "<placeName ref=\"${id}\">${0:TM_SELECTED_TEXT}</placeName>"
             },
             {
               "name": "people",
               "label": "People",
-              "plugin": "gnd"
+              "plugin": "gnd",
+              "template": "<persName ref=\"${id}\">${0:TM_SELECTED_TEXT}</persName>"
             },
             {
               "name": "terms",
               "label": "Terms",
-              "plugin": "gnd"
+              "plugin": "gnd",
+              "template": "<term ref=\"${id}\">${0:TM_SELECTED_TEXT}</term>"
             },
             {
               "name": "organisations",
               "label": "Organisations",
-              "plugin": "gnd"
+              "plugin": "gnd",
+              "template": "<orgName ref=\"${id}\">${0:TM_SELECTED_TEXT}</orgName>"
             }
           ]
         }

@@ -3,17 +3,9 @@ import { Registry, RegistryResultItem } from "../registry";
 
 export class KBGA extends Registry {
 
-    static registers = ['people', 'terms', 'places'];
-
     async query(key:string) {
         const results:RegistryResultItem[] = [];
-        if (!KBGA.registers.includes(this._register)) {
-            return {
-                totalItems: 0,
-                items: []
-            };
-        }
-        const register = this._register === 'people' ? 'actors' : this._register;
+        const register = this._register === 'people' || this._register === 'organisations' ? 'actors' : this._register;
         const url = `https://meta.karl-barth.ch/api/${register}?search=${encodeURIComponent(key)}`;
         console.log(url);
         const response = await axios.get(url);
@@ -37,9 +29,13 @@ export class KBGA extends Registry {
                 break;
         }
         json.data.forEach((item:any) => {
-            const type = this._register === 'people' ? item['authority_type'] : this._register;
+            // KBGA returns both, people and organisations, so we need to filter out organisations
+            // when searching for people
+            if ((this._register === 'organisations' && item['authority_type'] !== 'organisation') ||
+                (this._register === 'people' && item['authority_type'] !== 'person')) {
+                    return;
+            }
             const result:RegistryResultItem = {
-                type: type,
                 register: this._register,
                 id: item['full-id'],
                 label: item[label],
@@ -51,18 +47,5 @@ export class KBGA extends Registry {
             totalItems: json.meta.pagination.total,
             items: results
         };
-    }
-
-    format(item: RegistryResultItem) {
-        switch (item.type) {
-            case 'person':
-                return `<persName ref="${item.id}">$TM_SELECTED_TEXT</persName>`;
-            case 'organisation':
-                return `<orgName ref="${item.id}">$TM_SELECTED_TEXT</orgName>`;
-            case 'places':
-                return `<placeName ref="${item.id}">$TM_SELECTED_TEXT</placeName>`;
-            case 'terms':
-                return `<term ref="${item.id}">$TM_SELECTED_TEXT</term>`;
-        }
     }
 }

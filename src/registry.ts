@@ -3,8 +3,10 @@
  */
 export abstract class Registry {
     _register:string;
+    _config:any;
 
     constructor(config:any) {
+        this._config = config;
         this._register = config.name;
     }
 
@@ -21,7 +23,27 @@ export abstract class Registry {
      * 
      * @param item the item to output
      */
-    abstract format(item: RegistryResultItem): string | undefined;
+    format(item: RegistryResultItem): string | undefined {
+        const template = this._config.template;
+        return template.replace(/\${(\w+)}/, (match:string, p:string) => {
+            let replacement;
+            switch (p) {
+                case 'label':
+                    replacement = item.label;
+                    break;
+                case 'link':
+                    replacement = item.link;
+                    break;
+                case 'details':
+                    replacement = item.details;
+                    break;
+                case 'id':
+                    replacement = item.id;
+                    break;
+            }
+            return replacement || match;
+        });
+    }
 }
 
 /**
@@ -32,7 +54,6 @@ export interface RegistryResultItem {
      * Id of the registry from which this item was retrieved.
      */
     register: string;
-    type: string;
     /**
      * Unique ID of the item reported by the authority
      */
@@ -48,7 +69,7 @@ export interface RegistryResultItem {
     /**
      * Optional details to display
      */
-    details?: string;
+    details?: any;
 };
 
 export interface RegistryResult {

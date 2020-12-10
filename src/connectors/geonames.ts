@@ -23,8 +23,7 @@ export class GeoNames extends Registry {
         const json:any = response.data;
         json.geonames.forEach((item:any) => {
             const result:RegistryResultItem = {
-                type: 'place',
-                register: 'places',
+                register: this._register,
                 id: item.geonameId,
                 label: item.toponymName,
                 details: item.fcodeName,
@@ -36,9 +35,5 @@ export class GeoNames extends Registry {
             totalItems: json.totalResultsCount,
             items: results
         };
-    }
-
-    format(item: RegistryResultItem) {
-        return `<placeName ref="geonames-${item.id}">$TM_SELECTED_TEXT</placeName>`;
     }
 }

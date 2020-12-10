@@ -19,8 +19,7 @@ export class Metagrid extends Registry {
         json.resources.forEach((item:any) => {
             const name = `${item.metadata.first_name} ${item.metadata.last_name}`;
             const result:RegistryResultItem = {
-                register: 'people',
-                type: 'person',
+                register: this._register,
                 id: item.concordance.id,
                 label: name,
                 details: `${item.metadata.birth_date} - ${item.metadata.death_date}`,
@@ -32,18 +31,5 @@ export class Metagrid extends Registry {
             totalItems: json.meta.total,
             items: results
         };
-    }
-
-    format(item: RegistryResultItem) {
-        switch (this._register) {
-            case 'people':
-                return `<persName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</persName>`;
-            case 'organisations':
-                return `<orgName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</orgName>`;
-            case 'places':
-                return `<placeName ref="metagrid-${item.id}">$TM_SELECTED_TEXT</placeName>`;
-            case 'terms':
-                return `<term ref="metagrid-${item.id}">$TM_SELECTED_TEXT</term>`;
-        }
     }
 }
