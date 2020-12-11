@@ -173,11 +173,11 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 				<title>TEI Publisher Entity Lookup</title>
 			</head>
 			<body>
+				<select id="api-list">
+					<option value=''>All</option>
+					${ this._getApiOptions() }
+				</select>
 				<div class="toolbar">
-                    <select id="api-list">
-                        <option value=''>All</option>
-                        ${ this._getApiOptions() }
-                    </select>
                     <input id="query" class="input" type="text" placeholder="Suchtext">
                     <button id="run-query" class="button is-info">
                         <i class="codicon codicon-search"></i>
@@ -197,6 +197,6 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		if (!config) {
 			return '';
 		}
-		return config.map((api) => `<option value="${api.name}">${api.label}</option>`).join('');
+		return config.map((api) => `<option value="${api.name}">${api.label} - ${this._registry.get(api.name)?.name}</option>`).join('');
 	}
 }

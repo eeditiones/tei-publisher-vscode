@@ -71,7 +71,7 @@ button.secondary:hover {
 	background: var(--vscode-button-secondaryHoverBackground);
 }
 
-input:not([type='checkbox']), textarea {
+input:not([type='checkbox']), textarea, select {
 	display: block;
 	width: 100%;
 	border: none;
@@ -89,6 +89,10 @@ input::placeholder, textarea::placeholder {
 .toolbar {
 	display: flex;
 	margin-bottom: 1em;
+}
+
+#api-list {
+	height: 31px;
 }
 
 #run-query {
