@@ -4,8 +4,19 @@ An extension to help editors work on TEI files.
 
 ## Features
 
+* Some useful commands like
+  * wrap selection with element
+  * expand selection to parent node
 * Preview the currently edited TEI document by sending it to a TEI Publisher instance where it will be transformed to HTML via an existing ODD
 * Look up an entity in one of the configured authority databases and replace the current selection with a TEI tag corresponding to the entity type
+
+### Commands
+
+Command | Shortcut | Mac | Other
+---------|----------|---------|---------
+Expand selection to parent element | ctrl-cmd-e | ctrl-alt-e
+Wrap selection with element | cmd-e | ctrl-e
+Insert `<foreign>` | cmd-shift-f | ctrl-shift-f
 
 ### Preview
 
@@ -30,13 +41,6 @@ System | Keybinding
  other | ctrl-shift-e
 
 ![TEI Entity Explorer](media/screen-entity.gif)
-
- ### Snippets
-
-Snippet | Shortcut (Mac/other)
----------|----------
- Insert `<foreign>` | cmd-shift-f / ctrl-shift-f
- Wrap selection with element | cmd-e / ctrl-e
 
 ## Configuration
 
@@ -108,7 +112,11 @@ Within `template` you can also use vscode snippet parameters, e.g. `$0` to place
 
 ## Recommended Extensions
 
-For proper XML editing support, we recommend installing either the [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml) or the [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) extension. Scholary XML is more lightweight and has nice features, but it requires a `<?xml-model?>` processing instruction in every file. The Red Hat extension support catalog files, which allow you to associate an XML namespace with a certain schema. For example, a simple `catalog.xml` for all TEI files may look as follows:
+If you combine this with other extensions available on the vscode marketplace, you get rather decent XML editing support - not as sophisticated as with oXygen, but good enough for some serious work. 
+
+For schema-based validation and context sensitive suggestions one can choose between two extensions: [Scholary XML](https://marketplace.visualstudio.com/items?itemName=raffazizzi.sxml) is lightweight and provides nice suggestions with documentation. It only understands relax-ng though and does not support catalogs, which means you need to reference the schema via a processing instruction in every TEI file. The second option, [XML Language Support by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml), supports XML schema and catalogs, which you can use to associate the TEI namespace with a schema once and for all. On the downside, it uses more system resources as it starts a background Java process.
+
+To set up a catalog, just create a file `catalog.xml` somewhere with e.g. the following content and change the vscode configuration property `xml.catalogs` to point to it:
 
 ```xml
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
@@ -118,9 +126,4 @@ For proper XML editing support, we recommend installing either the [Scholary XML
 </catalog>
 ```
 
-Store this somewhere and change the `xml.catalogs` setting in vscode to point to it.
-
-Other extensions you might find useful:
-
-* [Language Server and Client for XQuery/eXistdb](https://marketplace.visualstudio.com/items?itemName=eXist-db.existdb-vscode)
-* [Auto Rename Tag](https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag)
+Finally, if you use TEI Publisher as a basis for your own editions, you definitely want to install the [Language Server and Client for XQuery/eXistdb](https://marketplace.visualstudio.com/items?itemName=eXist-db.existdb-vscode). It supports working on XQuery files, syncing your local changes with the database, installing XAR files and more.

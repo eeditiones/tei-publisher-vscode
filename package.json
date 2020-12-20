@@ -7,7 +7,7 @@
     "url": "https://github.com/eeditiones/tei-publisher-vscode.git"
   },
   "publisher": "e-editiones",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "license": "GPL-3.0-or-later",
   "engines": {
     "vscode": "^1.51.0"
@@ -67,6 +67,11 @@
         "command": "teipublisher.encloseInTag",
         "title": "Enclose selected text in tag",
         "category": "teipublisher"
+      },
+      {
+        "command": "teipublisher.expandSelection",
+        "title": "Expand selection to parent element",
+        "category": "teipublisher"
       }
     ],
     "menus": {
@@ -101,6 +106,11 @@
         "command": "teipublisher.encloseInTag",
         "key": "ctrl-e",
         "mac": "cmd-e"
+      },
+      {
+        "command": "teipublisher.expandSelection",
+        "key": "ctrl+alt+e",
+        "mac": "ctrl+cmd+e"
       }
     ],
     "snippets": [
@@ -211,6 +221,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "axios": "^0.21.0"
+    "axios": "^0.21.0",
+    "slimdom-sax-parser": "^1.4.0"
   }
 }

@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import axios from 'axios';
 import { RegistryPanel } from "./panel";
+import * as sax from "slimdom-sax-parser";
+import * as slimdom from 'slimdom';
 
 let apiEndpoint: string = 'http://localhost:8080/exist/apps/tei-publisher/';
 let previousOdd: string|undefined;
@@ -25,6 +27,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('teipublisher.encloseInTag', encloseInTag)
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('teipublisher.expandSelection', expandSelection)
 	);
 
 	vscode.workspace.onDidChangeConfiguration((ev) => {
@@ -188,4 +194,52 @@ function encloseInTag() {
 			vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(snippet));
 		}
 	});
+}
+
+function expandSelection() {
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		const text = editor.document.getText();
+		sax.async(text, {position: true})
+		.then((dom) => {
+			const start = editor.selection.start;
+			const end = editor.selection.end;
+			const startPos = editor.document.offsetAt(start);
+			const endPos = editor.document.offsetAt(end);
+			const contextNode = findNode(dom, startPos, endPos);
+			if (contextNode) {
+				const range = getRangeForNode(editor.document, startPos === endPos ? contextNode : contextNode.parentNode);
+				editor.selection = new vscode.Selection(range.start, range.end);
+			}
+		});
+	}
+}
+
+function findNode(node: any, start: number, end:number, contextNode?: any): any {
+	if ((node.position && start >= node.position.start && end <= node.position.end) ||
+		(node.closePosition && start >= node.position.start && end <= node.closePosition.end)) {
+		contextNode = node;
+	}
+	node = node.firstChild;
+	while(node) {
+		contextNode = findNode(node, start, end, contextNode);
+		node = node.nextSibling;
+	}
+	return contextNode;
+}
+
+function getRangeForNode(document: vscode.TextDocument, contextNode: any) {
+    let range: vscode.Range;
+    if (contextNode.closePosition) {
+        range = new vscode.Range(
+            document.positionAt(contextNode.position.start), 
+            document.positionAt(contextNode.closePosition.end)
+        );
+    } else {
+        range = new vscode.Range(
+            document.positionAt(contextNode.position.start), 
+            document.positionAt(contextNode.position.end)
+        );
+    }
+    return range;
 }

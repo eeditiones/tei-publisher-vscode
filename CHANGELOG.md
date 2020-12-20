@@ -4,6 +4,8 @@ All notable changes to the "tei-publisher-vscode" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [0.8.0] - 2020-12-20
 
-- Initial release
+### Added
+
+* New command: expand selection to parent element
