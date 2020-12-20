@@ -33,6 +33,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.expandSelection', expandSelection)
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('teipublisher.splitElement', splitElement)
+	);
+
 	vscode.workspace.onDidChangeConfiguration((ev) => {
 		if (ev.affectsConfiguration('teipublisher')) {
 			configure(provider, ev);
@@ -199,8 +203,7 @@ function encloseInTag() {
 function expandSelection() {
 	const editor = vscode.window.activeTextEditor;
 	if (editor) {
-		const text = editor.document.getText();
-		sax.async(text, {position: true})
+		sax.async(editor.document.getText(), {position: true})
 		.then((dom) => {
 			const start = editor.selection.start;
 			const end = editor.selection.end;
@@ -210,6 +213,26 @@ function expandSelection() {
 			if (contextNode) {
 				const range = getRangeForNode(editor.document, startPos === endPos ? contextNode : contextNode.parentNode);
 				editor.selection = new vscode.Selection(range.start, range.end);
+			}
+		});
+	}
+}
+
+function splitElement() {
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		sax.async(editor.document.getText(), {position: true})
+		.then((dom) => {
+			const end = editor.selection.end;
+			const endPos = editor.document.offsetAt(end);
+			const contextNode = findNode(dom, endPos, endPos);
+			if (contextNode) {
+				const parentNode = contextNode.parentNode;
+				if (parentNode.nodeType === slimdom.Node.ELEMENT_NODE) {
+					editor.edit((builder) => {
+						builder.insert(end, `</${parentNode.nodeName}><${parentNode.nodeName}>`);
+					});
+				}
 			}
 		});
 	}

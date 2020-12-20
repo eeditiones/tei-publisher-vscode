@@ -4,6 +4,12 @@ All notable changes to the "tei-publisher-vscode" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.9.0] - 2020-12-20
+
+### Added
+
+* New command: split current element at cursor position
+
 ## [0.8.0] - 2020-12-20
 
 ### Added

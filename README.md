@@ -7,6 +7,7 @@ An extension to help editors work on TEI files.
 * Some useful commands like
   * wrap selection with element
   * expand selection to parent node
+  * split current element at cursor position
 * Preview the currently edited TEI document by sending it to a TEI Publisher instance where it will be transformed to HTML via an existing ODD
 * Look up an entity in one of the configured authority databases and replace the current selection with a TEI tag corresponding to the entity type
 
@@ -16,6 +17,7 @@ Command | Shortcut | Mac | Other
 ---------|----------|---------|---------
 Expand selection to parent element | ctrl-cmd-e | ctrl-alt-e
 Wrap selection with element | cmd-e | ctrl-e
+Split current element at cursor position | cmd-shift-d | ctrl-alt-d
 Insert `<foreign>` | cmd-shift-f | ctrl-shift-f
 
 ### Preview

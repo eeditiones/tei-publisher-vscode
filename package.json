@@ -7,7 +7,7 @@
     "url": "https://github.com/eeditiones/tei-publisher-vscode.git"
   },
   "publisher": "e-editiones",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "license": "GPL-3.0-or-later",
   "engines": {
     "vscode": "^1.51.0"
@@ -72,6 +72,11 @@
         "command": "teipublisher.expandSelection",
         "title": "Expand selection to parent element",
         "category": "teipublisher"
+      },
+      {
+        "command": "teipublisher.splitElement",
+        "title": "Split current element at cursor position",
+        "category": "teipublisher"
       }
     ],
     "menus": {
@@ -111,6 +116,11 @@
         "command": "teipublisher.expandSelection",
         "key": "ctrl+alt+e",
         "mac": "ctrl+cmd+e"
+      },
+      {
+        "command": "teipublisher.splitElement",
+        "key": "ctrl+alt+d",
+        "mac": "cmd+shift-d"
       }
     ],
     "snippets": [
