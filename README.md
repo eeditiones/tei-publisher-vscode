@@ -1,15 +1,16 @@
 # TEI Publisher Extension for Visual Studio Code
 
-An extension to help editors work on TEI files. 
+An extension to help editors work on TEI and other XML documents. Only one of the features, namely preview, requires an instance of TEI Publisher. The rest is generally usable for XML editing.
 
 ## Features
 
-* Some useful commands like
+* Some useful **commands** like
   * wrap selection with element
   * expand selection to parent node
   * split current element at cursor position
-* Preview the currently edited TEI document by sending it to a TEI Publisher instance where it will be transformed to HTML via an existing ODD
-* Look up an entity in one of the configured authority databases and replace the current selection with a TEI tag corresponding to the entity type
+  * delete tag around current node
+* **Preview** the currently edited TEI document by sending it to a TEI Publisher instance where it will be transformed to HTML via an existing ODD
+* **Look up an entity** in one of the configured authority databases and replace the current selection with a TEI tag corresponding to the entity type
 
 ### Commands
 
@@ -18,6 +19,7 @@ Command | Shortcut | Mac | Other
 Expand selection to parent element | ctrl-cmd-e | ctrl-alt-e
 Wrap selection with element | cmd-e | ctrl-e
 Split current element at cursor position | cmd-shift-d | ctrl-alt-d
+Delete tag around current node | cmd-alt-x | ctrl+alt+x
 Insert `<foreign>` | cmd-shift-f | ctrl-shift-f
 
 ### Preview

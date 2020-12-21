@@ -37,6 +37,10 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.splitElement', splitElement)
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('teipublisher.deleteTag', deleteTag)
+	);
+
 	vscode.workspace.onDidChangeConfiguration((ev) => {
 		if (ev.affectsConfiguration('teipublisher')) {
 			configure(provider, ev);
@@ -214,6 +218,9 @@ function expandSelection() {
 				const range = getRangeForNode(editor.document, startPos === endPos ? contextNode : contextNode.parentNode);
 				editor.selection = new vscode.Selection(range.start, range.end);
 			}
+		})
+		.catch((error) => {
+			vscode.window.showErrorMessage(`XML invalid: ${error}`);
 		});
 	}
 }
@@ -234,6 +241,41 @@ function splitElement() {
 					});
 				}
 			}
+		})
+		.catch((error) => {
+			vscode.window.showErrorMessage(`XML invalid: ${error}`);
+		});
+	}
+}
+
+function deleteTag() {
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		sax.async(editor.document.getText(), {position: true})
+		.then((dom) => {
+			const start = editor.selection.start;
+			const end = editor.selection.end;
+			const startPos = editor.document.offsetAt(start);
+			const endPos = editor.document.offsetAt(end);
+			const contextNode = findNode(dom, startPos, endPos);
+			if (contextNode) {
+				const elem = contextNode.nodeType === slimdom.Node.ELEMENT_NODE ? contextNode : contextNode.parentNode;
+				const startTag = new vscode.Range(
+					editor.document.positionAt(elem.position.start), 
+            		editor.document.positionAt(elem.position.end)
+				);
+				const endTag = new vscode.Range(
+					editor.document.positionAt(elem.closePosition.start), 
+            		editor.document.positionAt(elem.closePosition.end)
+				);
+				editor.edit((builder) => {
+					builder.delete(startTag);
+					builder.delete(endTag);
+				});
+			}
+		})
+		.catch((error) => {
+			vscode.window.showErrorMessage(`XML invalid: ${error}`);
 		});
 	}
 }

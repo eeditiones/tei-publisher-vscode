@@ -77,6 +77,11 @@
         "command": "teipublisher.splitElement",
         "title": "Split current element at cursor position",
         "category": "teipublisher"
+      },
+      {
+        "command": "teipublisher.deleteTag",
+        "title": "Delete closest tag around current node",
+        "category": "teipublisher"
       }
     ],
     "menus": {
@@ -121,6 +126,11 @@
         "command": "teipublisher.splitElement",
         "key": "ctrl+alt+d",
         "mac": "cmd+shift-d"
+      },
+      {
+        "command": "teipublisher.deleteTag",
+        "key": "ctrl+alt+x",
+        "mac": "cmd-alt-x"
       }
     ],
     "snippets": [
