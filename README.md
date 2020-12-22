@@ -22,6 +22,8 @@ Split current element at cursor position | cmd-shift-d | ctrl-alt-d
 Delete tag around current node | cmd-alt-x | ctrl+alt+x
 Insert `<foreign>` | cmd-shift-f | ctrl-shift-f
 
+![Editing screencast](media/screen-editing.gif)
+
 ### Preview
 
 Get an HTML preview of the TEI file currently opened in the editor. The content is sent to a TEI Publisher endpoint and transformed to HTML via an ODD with processing instructions. The extension queries the server for a list of available ODDs and lets you choose one.
