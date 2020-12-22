@@ -188,16 +188,20 @@ function loadOddList(): Thenable<vscode.QuickPickItem[]> {
 	});
 }
 
+let lastInsertedTag: string|undefined;
+
 function encloseInTag() {
 	if (!vscode.window.activeTextEditor) {
 		return;
 	}
 	vscode.window.showInputBox({
 		prompt: 'Wrap selection with element',
-		placeHolder: 'Name of the element'
+		placeHolder: 'Name of the element',
+		value: lastInsertedTag
 	})
 	.then(tag => {
 		if (tag) {
+			lastInsertedTag = tag;
 			const snippet = `<${tag}>$TM_SELECTED_TEXT</${tag}>`;
 			vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(snippet));
 		}
@@ -228,7 +232,8 @@ function expandSelection() {
 function splitElement() {
 	const editor = vscode.window.activeTextEditor;
 	if (editor) {
-		sax.async(editor.document.getText(), {position: true})
+		const text = editor.document.getText();
+		sax.async(text, {position: true})
 		.then((dom) => {
 			const end = editor.selection.end;
 			const endPos = editor.document.offsetAt(end);
@@ -236,9 +241,15 @@ function splitElement() {
 			if (contextNode) {
 				const parentNode = contextNode.parentNode;
 				if (parentNode.nodeType === slimdom.Node.ELEMENT_NODE) {
+					const wsRegex = /\s+/g;
+					wsRegex.lastIndex = endPos;
+					const afterPos = wsRegex.exec(text) ? wsRegex.lastIndex : endPos;
 					editor.edit((builder) => {
-						builder.insert(end, `</${parentNode.nodeName}><${parentNode.nodeName}>`);
+						builder.insert(editor.document.positionAt(afterPos), `<${parentNode.nodeName}>`);
+						builder.insert(end, `</${parentNode.nodeName}>`);
 					});
+					// const snippet = new vscode.SnippetString(`</${parentNode.nodeName}>$0<${parentNode.nodeName}>`);
+					// editor.insertSnippet(snippet, end);
 				}
 			}
 		})
