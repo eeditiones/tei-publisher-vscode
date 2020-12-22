@@ -4,6 +4,16 @@ All notable changes to the "tei-publisher-vscode" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.0.1] - 2020-12-22
+
+### Fixed
+
+* Respect whitespace when splitting element: skip over whitespace after split point before inserting opening tag
+
+### Documentation
+
+* Add screencast showing extra editing commands
+
 ## [1.0.0] - 2020-12-21
 
 ### Added 
