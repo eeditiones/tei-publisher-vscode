@@ -241,7 +241,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "slimdom-sax-parser": "^1.4.0"
   }
 }
