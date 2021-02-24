@@ -52,7 +52,7 @@ export class KBGA extends Registry {
             results.push(result);
         });
         return {
-            totalItems: json.meta.pagination.total,
+            totalItems: json.meta.total,
             items: results
         };
     }
