@@ -28,6 +28,9 @@ export class KBGA extends Registry {
             case 'terms':
                 label = 'fullLabel';
                 break;
+            case 'abbreviations':
+                label = 'label';
+                break;
             default:
                 label = 'persName_full';
                 break;
