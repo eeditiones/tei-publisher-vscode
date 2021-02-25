@@ -116,6 +116,23 @@ Variable | Description
 
 Within `template` you can also use vscode snippet parameters, e.g. `$0` to place the cursor at a certain position after inserting the text. `${0:$TM_SELECTED_TEXT}` will either insert the text selection or position the cursor if nothing is selected.
 
+Connectors may also take additional configuration parameters in property `options`, which takes an arbitrary JSON object. Currently only the [metagrid](https://metagrid.ch/) connector uses this feature. *metagrid* is a meta-service, incorporating different authorities. You can thus pass a configuration property `providers` to define a prioritized list of authorities to use. The entry ID of the first authority providing a result will be used. For example, you may prefer your entities to be linked *helveticat* where available and fall back to *gnd* otherwise:
+
+```json
+{
+    "name": "people",
+    "label": "People",
+    "plugin": "gnd",
+    "template": "<persName ref=\"${id}\">${0:$TM_SELECTED_TEXT}</persName>",
+    "options": {
+        "providers": [
+            "helveticat",
+            "gnd"
+        ]
+    }
+}
+```
+
 ## Recommended Extensions
 
 If you combine this with other extensions available on the vscode marketplace, you get rather decent XML editing support - not as sophisticated as with oXygen, but good enough for some serious work. 

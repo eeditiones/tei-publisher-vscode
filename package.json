@@ -180,6 +180,10 @@
               "template": {
                 "type": "string",
                 "description": "Template string used to construct the TEI element. May reference the ID to be inserted with ${id}, the external link with ${link} or the label with ${label}. It may also contain vscode snippet placeholders like ${0}."
+              },
+              "options": {
+                "type": "object",
+                "description": "Additional options to be passed to the plugin."
               }
             }
           },

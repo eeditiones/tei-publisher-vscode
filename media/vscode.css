@@ -101,6 +101,10 @@ input::placeholder, textarea::placeholder {
 
 #results td {
 	vertical-align: top;
+	border-bottom: 1px solid var(--vscode-input-background);
+	padding: 0;
+	padding-bottom: 4px;
+	margin-bottom: 4px;
 }
 
 #results td:nth-child(1) {
