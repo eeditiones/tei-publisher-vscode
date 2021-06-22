@@ -161,12 +161,14 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'codicon.css'));
 		const codiconsFontUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'codicon.ttf'));
 
+		const nonce = getNonce();
+		
 		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptUri}; font-src ${codiconsFontUri}; style-src ${codiconsUri} ${webview.cspSource};">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${nonce}';  font-src ${webview.cspSource}; style-src ${webview.cspSource};">
 				<link href="${codiconsUri}" rel="stylesheet">
 				<link href="${stylesResetUri}" rel="stylesheet">
 				<link href="${stylesMainUri}" rel="stylesheet">
@@ -187,7 +189,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 				<table class="table">
                     <tbody id="results"></tbody>
 				</table>
-				<script src="${scriptUri}"></script>
+				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
 	}
@@ -199,4 +201,13 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		}
 		return config.map((api) => `<option value="${api.name}">${api.label} - ${this._registry.get(api.name)?.name}</option>`).join('');
 	}
+}
+
+function getNonce() {
+	let text = '';
+	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	for (let i = 0; i < 32; i++) {
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	}
+	return text;
 }
