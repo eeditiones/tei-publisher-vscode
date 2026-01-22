@@ -10,7 +10,7 @@
   "version": "1.0.0",
   "license": "GPL-3.0-or-later",
   "engines": {
-    "vscode": "^1.51.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
@@ -25,8 +25,7 @@
   "icon": "media/logo.png",
   "activationEvents": [
     "onLanguage:xml",
-    "onView:teipublisher.entityView",
-    "onCommand:teipublisher.entityView"
+    "onView:teipublisher.entityView"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -97,12 +96,14 @@
       {
         "command": "teipublisher.lookup",
         "key": "ctrl-shift-e",
-        "mac": "cmd-shift-e"
+        "mac": "cmd-shift-e",
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "teipublisher.preview",
         "key": "ctrl-shift-a",
-        "mac": "cmd-shift-a"
+        "mac": "cmd-shift-a",
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "editor.action.insertSnippet",
@@ -110,27 +111,32 @@
         "mac": "cmd-shift-f",
         "args": {
           "name": "foreign"
-        }
+        },
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "teipublisher.encloseInTag",
         "key": "ctrl-e",
-        "mac": "cmd-e"
+        "mac": "ctrl-e",
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "teipublisher.expandSelection",
         "key": "ctrl+alt+e",
-        "mac": "ctrl+cmd+e"
+        "mac": "ctrl+cmd+e",
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "teipublisher.splitElement",
         "key": "ctrl+alt+d",
-        "mac": "cmd+shift-d"
+        "mac": "cmd+shift-d",
+        "when": "editorTextFocus && editorLangId == xml"
       },
       {
         "command": "teipublisher.deleteTag",
         "key": "ctrl+alt+x",
-        "mac": "cmd-alt-x"
+        "mac": "cmd-alt-x",
+        "when": "editorTextFocus && editorLangId == xml"
       }
     ],
     "snippets": [
@@ -219,8 +225,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
+    "clean": "rm -rf dist out",
     "compile": "webpack --devtool nosources-source-map --config ./build/node-extension.webpack.config.js",
-    "watch": "webpack --watch --devtool nosources-source-map --info-verbosity verbose --config ./build/node-extension.webpack.config.js",
+    "watch": "webpack --watch --devtool nosources-source-map --config ./build/node-extension.webpack.config.js",
     "package": "webpack --mode production --config ./build/node-extension.webpack.config.js",
     "test-compile": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
@@ -229,23 +236,23 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.0.0",
-    "@types/node": "^12.11.7",
-    "@types/vscode": "^1.51.0",
-    "@typescript-eslint/eslint-plugin": "^4.1.1",
-    "@typescript-eslint/parser": "^4.1.1",
-    "eslint": "^7.9.0",
-    "glob": "^7.1.6",
-    "mocha": "^8.1.3",
-    "ts-loader": "^8.0.3",
-    "typescript": "^4.0.2",
-    "vscode-test": "^1.4.0",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.18.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.1",
+    "glob": "^10.3.10",
+    "mocha": "^10.6.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "axios": "^0.21.0",
+    "axios": "^1.7.7",
     "slimdom-sax-parser": "^1.4.0"
   }
 }

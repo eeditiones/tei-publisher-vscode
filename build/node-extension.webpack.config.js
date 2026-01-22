@@ -14,7 +14,9 @@ const config = {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, '..', 'dist'),
     filename: 'extension.js',
-    libraryTarget: 'commonjs2',
+    library: {
+      type: 'commonjs2'
+    },
     devtoolModuleFilenameTemplate: '../[resource-path]'
   },
   devtool: 'source-map',
@@ -23,7 +25,9 @@ const config = {
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    // webpack 5 no longer automatically polyfills Node.js core modules
+    fallback: {}
   },
   module: {
     rules: [

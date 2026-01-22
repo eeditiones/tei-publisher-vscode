@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('teipublisher.deleteTag', deleteTag)
 	);
 
-	vscode.workspace.onDidChangeConfiguration((ev) => {
+	vscode.workspace.onDidChangeConfiguration((ev: vscode.ConfigurationChangeEvent) => {
 		if (ev.affectsConfiguration('teipublisher')) {
 			configure(provider, ev);
 		}
@@ -64,69 +64,72 @@ export function deactivate() {}
  * Preview the document currently open in the editor by sending the
  * content to a TEI Publisher instance and transforming it to HTML via ODD.
  */
-function preview() {
+async function preview() {
 	if (!vscode.window.activeTextEditor) {
 		return;
 	}
 	const editor = vscode.window.activeTextEditor;
-	loadOddList().then((items) => {
+	try {
+		const items = await loadOddList();
 		if (!items) {
 			return;
 		}
-		vscode.window.showQuickPick(items, { placeHolder: 'ODD to use', canPickMany: false })
-			.then((odd) => {
-				const tei = editor.document.getText();
-				const params: { base:string, odd?: string } = {
-					base: `${apiEndpoint}/`
-				};
-				if (odd) {
-					params.odd = `${odd.description}.odd`;
-					previousOdd = odd.description;
-				}
-				console.log(`Using ODD ${params.odd}`);
-				const fileName = vscode.workspace.asRelativePath(editor.document.uri);
-				vscode.window.withProgress({
-					location: vscode.ProgressLocation.Notification,
-					title: `Transforming document ${fileName}`,
-					cancellable: false
-				}, (progress) => {
-					return new Promise((resolve, reject) => {
-						axios.post(`${apiEndpoint}/api/preview`, tei, {
-							headers: {
-								"Content-Type": "application/xml",
-								"Origin": "http://localhost:8080"
-							},
-							params
-						}).then((response) => {
-							if (response.status !== 200) {
-								reject();
-							}
-							const panel = vscode.window.createWebviewPanel(
-								'teipublisher-transform',
-								`Transformation Result ${fileName}`,
-								vscode.ViewColumn.Beside,
-								{
-									enableScripts: true
-								}
-							);
-							panel.webview.html = injectStyles(response.data);
-							resolve(true);
-						}).catch((error) => {
-							console.log(error.response.data);
-							vscode.window.showErrorMessage(`The request failed: ${error.response.data.description}`);
-							reject();
-						});
-					});
+		const odd = await vscode.window.showQuickPick(items, { placeHolder: 'ODD to use', canPickMany: false });
+		const tei = editor.document.getText();
+		const params: { base:string, odd?: string } = {
+			base: `${apiEndpoint}/`
+		};
+		if (odd) {
+			params.odd = `${odd.description}.odd`;
+			previousOdd = odd.description;
+		}
+		console.log(`Using ODD ${params.odd}`);
+		const fileName = vscode.workspace.asRelativePath(editor.document.uri);
+		await vscode.window.withProgress({
+			location: vscode.ProgressLocation.Notification,
+			title: `Transforming document ${fileName}`,
+			cancellable: false
+		}, async (_progress) => {
+			try {
+				const response = await axios.post(`${apiEndpoint}/api/preview`, tei, {
+					headers: {
+						"Content-Type": "application/xml",
+						"Origin": "http://localhost:8080"
+					},
+					params
 				});
-			});
-	});
+				if (response.status !== 200) {
+					vscode.window.showErrorMessage('The request failed with an unexpected status code.');
+					return;
+				}
+				const panel = vscode.window.createWebviewPanel(
+					'teipublisher-transform',
+					`Transformation Result ${fileName}`,
+					vscode.ViewColumn.Beside,
+					{
+						enableScripts: true
+					}
+				);
+				panel.webview.html = injectStyles(response.data);
+			} catch (error: unknown) {
+				const errorMessage = axios.isAxiosError(error) && error.response?.data?.description
+					? error.response.data.description
+					: 'The request failed with an unknown error.';
+				console.error('Preview request failed:', error);
+				vscode.window.showErrorMessage(`The request failed: ${errorMessage}`);
+			}
+		});
+	} catch (error) {
+		console.error('Preview failed:', error);
+		vscode.window.showErrorMessage('Failed to preview document.');
+	}
 }
 
-function injectStyles(content:string) :string {
+function injectStyles(content:string): string {
 	const config = vscode.workspace.getConfiguration('teipublisher');
-	const fontSize:string|undefined = config.get('fontSize');
-	const lineHeight:string|undefined = config.get('lineHeight');
-	let styles;
+	const fontSize: string | undefined = config.get('fontSize');
+	const lineHeight: string | undefined = config.get('lineHeight');
+	let styles = '';
 	if (fontSize) {
 		styles = `font-size: ${fontSize};`;
 	}
@@ -140,154 +143,153 @@ function injectStyles(content:string) :string {
  * Retrieve a list of available ODDs and return them as quick pick items
  * for users to select from.
  */
-function loadOddList(): Thenable<vscode.QuickPickItem[]> {
+async function loadOddList(): Promise<vscode.QuickPickItem[]> {
 	return vscode.window.withProgress({
 		location: vscode.ProgressLocation.Notification,
 		title: `Retrieving list of ODDs`,
 		cancellable: false
-	}, (progress) => {
-		return new Promise((resolve, reject) => {
-			axios.get(`${apiEndpoint}/api/odd`, {
+	}, async (_progress) => {
+		try {
+			const response = await axios.get(`${apiEndpoint}/api/odd`, {
 				headers: {
 					"Origin": "http://localhost:8080"
 				}
-			})
-			.then(response => {
-				if (response.status === 200) {
-					const odds:vscode.QuickPickItem[] = [];
-					response.data.forEach((odd: { label: string; name: string; }) => {
-						const item:vscode.QuickPickItem = {
-							label: odd.label,
-							description: odd.name
-						};
-						if (previousOdd && odd.name === previousOdd) {
-							item.picked = true;
-						}
-						odds.push(item);
-					});
-					odds.sort((a, b) => {
-						if (a.picked && !b.picked) {
-							return -1;
-						}
-						if (a.description && b.description) {
-							return a.description.localeCompare(b.description);
-						}
-						return -1;
-					});
-					resolve(odds);
-				} else {
-					vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
-					reject();
-				}
-			})
-			.catch(error => {
-				vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
-				reject();
 			});
-		});
+			if (response.status === 200) {
+				const odds: vscode.QuickPickItem[] = [];
+				response.data.forEach((odd: { label: string; name: string; }) => {
+					const item: vscode.QuickPickItem = {
+						label: odd.label,
+						description: odd.name
+					};
+					if (previousOdd && odd.name === previousOdd) {
+						item.picked = true;
+					}
+					odds.push(item);
+				});
+				odds.sort((a, b) => {
+					if (a.picked && !b.picked) {
+						return -1;
+					}
+					if (a.description && b.description) {
+						return a.description.localeCompare(b.description);
+					}
+					return -1;
+				});
+				return odds;
+			} else {
+				vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
+				return [];
+			}
+		} catch (error) {
+			console.error('Failed to load ODD list:', error);
+			vscode.window.showErrorMessage('Retrieving list of available ODDs failed!');
+			return [];
+		}
 	});
 }
 
 let lastInsertedTag: string|undefined;
 
-function encloseInTag() {
+async function encloseInTag() {
 	if (!vscode.window.activeTextEditor) {
 		return;
 	}
-	vscode.window.showInputBox({
+	const tag = await vscode.window.showInputBox({
 		prompt: 'Wrap selection with element',
 		placeHolder: 'Name of the element',
 		value: lastInsertedTag
-	})
-	.then(tag => {
-		if (tag) {
-			lastInsertedTag = tag;
-			const snippet = `<${tag}>$TM_SELECTED_TEXT</${tag}>`;
-			vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(snippet));
-		}
 	});
-}
-
-function expandSelection() {
-	const editor = vscode.window.activeTextEditor;
-	if (editor) {
-		sax.async(editor.document.getText(), {position: true})
-		.then((dom) => {
-			const start = editor.selection.start;
-			const end = editor.selection.end;
-			const startPos = editor.document.offsetAt(start);
-			const endPos = editor.document.offsetAt(end);
-			const contextNode = findNode(dom, startPos, endPos);
-			if (contextNode) {
-				const range = getRangeForNode(editor.document, startPos === endPos ? contextNode : contextNode.parentNode);
-				editor.selection = new vscode.Selection(range.start, range.end);
-			}
-		})
-		.catch((error) => {
-			vscode.window.showErrorMessage(`XML invalid: ${error}`);
-		});
+	if (tag) {
+		lastInsertedTag = tag;
+		const snippet = `<${tag}>$TM_SELECTED_TEXT</${tag}>`;
+		await vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(snippet));
 	}
 }
 
-function splitElement() {
+async function expandSelection() {
 	const editor = vscode.window.activeTextEditor;
-	if (editor) {
+	if (!editor) {
+		return;
+	}
+	try {
+		const dom = await sax.async(editor.document.getText(), {position: true});
+		const start = editor.selection.start;
+		const end = editor.selection.end;
+		const startPos = editor.document.offsetAt(start);
+		const endPos = editor.document.offsetAt(end);
+		const contextNode = findNode(dom, startPos, endPos);
+		if (contextNode) {
+			const range = getRangeForNode(editor.document, startPos === endPos ? contextNode : contextNode.parentNode);
+			editor.selection = new vscode.Selection(range.start, range.end);
+		}
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		vscode.window.showErrorMessage(`XML invalid: ${errorMessage}`);
+	}
+}
+
+async function splitElement() {
+	const editor = vscode.window.activeTextEditor;
+	if (!editor) {
+		return;
+	}
+	try {
 		const text = editor.document.getText();
-		sax.async(text, {position: true})
-		.then((dom) => {
-			const end = editor.selection.end;
-			const endPos = editor.document.offsetAt(end);
-			const contextNode = findNode(dom, endPos, endPos);
-			if (contextNode) {
-				const parentNode = contextNode.parentNode;
-				if (parentNode.nodeType === slimdom.Node.ELEMENT_NODE) {
+		const dom = await sax.async(text, {position: true});
+		const end = editor.selection.end;
+		const endPos = editor.document.offsetAt(end);
+		const contextNode = findNode(dom, endPos, endPos);
+		if (contextNode) {
+			const parentNode = contextNode.parentNode;
+				if (parentNode && parentNode.nodeType === slimdom.Node.ELEMENT_NODE) {
 					const wsRegex = /\s+/g;
 					wsRegex.lastIndex = endPos;
 					const afterPos = wsRegex.exec(text) ? wsRegex.lastIndex : endPos;
-					editor.edit((builder) => {
+					await editor.edit((builder: vscode.TextEditorEdit) => {
 						builder.insert(editor.document.positionAt(afterPos), `<${parentNode.nodeName}>`);
 						builder.insert(end, `</${parentNode.nodeName}>`);
 					});
-					// const snippet = new vscode.SnippetString(`</${parentNode.nodeName}>$0<${parentNode.nodeName}>`);
-					// editor.insertSnippet(snippet, end);
-				}
 			}
-		})
-		.catch((error) => {
-			vscode.window.showErrorMessage(`XML invalid: ${error}`);
-		});
+		}
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		vscode.window.showErrorMessage(`XML invalid: ${errorMessage}`);
 	}
 }
 
-function deleteTag() {
+async function deleteTag() {
 	const editor = vscode.window.activeTextEditor;
-	if (editor) {
-		sax.async(editor.document.getText(), {position: true})
-		.then((dom) => {
-			const start = editor.selection.start;
-			const end = editor.selection.end;
-			const startPos = editor.document.offsetAt(start);
-			const endPos = editor.document.offsetAt(end);
-			const contextNode = findNode(dom, startPos, endPos);
-			if (contextNode) {
-				const elem = contextNode.nodeType === slimdom.Node.ELEMENT_NODE ? contextNode : contextNode.parentNode;
+	if (!editor) {
+		return;
+	}
+	try {
+		const dom = await sax.async(editor.document.getText(), {position: true});
+		const start = editor.selection.start;
+		const end = editor.selection.end;
+		const startPos = editor.document.offsetAt(start);
+		const endPos = editor.document.offsetAt(end);
+		const contextNode = findNode(dom, startPos, endPos);
+		if (contextNode) {
+			const elem = contextNode.nodeType === slimdom.Node.ELEMENT_NODE ? contextNode : contextNode.parentNode;
+			if (elem && elem.position && elem.closePosition) {
 				const startTag = new vscode.Range(
 					editor.document.positionAt(elem.position.start), 
-            		editor.document.positionAt(elem.position.end)
+					editor.document.positionAt(elem.position.end)
 				);
 				const endTag = new vscode.Range(
 					editor.document.positionAt(elem.closePosition.start), 
-            		editor.document.positionAt(elem.closePosition.end)
+					editor.document.positionAt(elem.closePosition.end)
 				);
-				editor.edit((builder) => {
+				await editor.edit((builder: vscode.TextEditorEdit) => {
 					builder.delete(startTag);
 					builder.delete(endTag);
 				});
 			}
-		})
-		.catch((error) => {
-			vscode.window.showErrorMessage(`XML invalid: ${error}`);
-		});
+		}
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		vscode.window.showErrorMessage(`XML invalid: ${errorMessage}`);
 	}
 }
 

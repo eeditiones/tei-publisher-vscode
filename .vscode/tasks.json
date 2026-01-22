@@ -6,10 +6,23 @@
 		{
 			"type": "npm",
 			"script": "watch",
-			"problemMatcher": [
-                "$ts-webpack-watch",
-                "$tslint-webpack-watch"
-			],
+			"problemMatcher": {
+				"owner": "webpack",
+				"pattern": {
+					"regexp": "^(.*)\\((\\d+),(\\d+)\\):\\s+(error|warning)\\s+(TS\\d+)\\s*:\\s*(.*)$",
+					"file": 1,
+					"line": 2,
+					"column": 3,
+					"severity": 4,
+					"code": 5,
+					"message": 6
+				},
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^.*",
+					"endsPattern": "^.*webpack.*compiled.*successfully.*"
+				}
+			},
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
@@ -17,7 +30,8 @@
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			}
+			},
+			"label": "npm: watch"
 		},
 		{
 			"type": "npm",
@@ -27,7 +41,8 @@
 			"presentation": {
 				"reveal": "never"
 			},
-			"group": "build"
+			"group": "build",
+			"label": "npm: test-watch"
 		}
 	]
 }

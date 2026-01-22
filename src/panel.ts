@@ -19,7 +19,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
 	private _currentEditor: vscode.TextEditor | undefined = undefined;
 
-    public resolveWebviewView(webviewView: vscode.WebviewView, context: vscode.WebviewViewResolveContext, token: vscode.CancellationToken) {
+    public resolveWebviewView(webviewView: vscode.WebviewView, _context: vscode.WebviewViewResolveContext, _token: vscode.CancellationToken) {
         this._view = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
@@ -36,17 +36,24 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 						this._currentRegister = message.register;
 						break;
 					case 'replace':
-						let editor = this._currentEditor;
-						if (!editor || !editor.document.isClosed) {
-							editor = vscode.window.activeTextEditor;
-						}
-						if (editor) {
-							const plugin = this._registry.get(message.register);
-							if (plugin) {
-								const snippet = plugin.format(message.item);
-								editor.insertSnippet(new vscode.SnippetString(snippet));
+						(async () => {
+							let editor = this._currentEditor;
+							if (!editor || editor.document.isClosed) {
+								editor = vscode.window.activeTextEditor;
 							}
-						}
+							if (editor) {
+								const plugin = this._registry.get(message.register);
+								if (plugin) {
+									const snippet = plugin.format(message.item);
+									if (snippet) {
+										await editor.insertSnippet(new vscode.SnippetString(snippet));
+									}
+								}
+							}
+						})().catch(error => {
+							console.error('Failed to insert snippet:', error);
+							vscode.window.showErrorMessage('Failed to insert snippet.');
+						});
 						break;
 					case 'query':
                         this.query(message.query, message.register);
@@ -61,14 +68,18 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
     
 
 	public configure(ev?: vscode.ConfigurationChangeEvent) {
-		const configs:any[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
-		if (!configs) {
+		const configs: unknown[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
+		if (!configs || !Array.isArray(configs)) {
 			return;
 		}
 		this._registry.clear();
-		configs.forEach((config) => {
-			let registry;
-			switch (config.plugin) {
+		configs.forEach((config: unknown) => {
+			if (!config || typeof config !== 'object' || !('plugin' in config) || !('name' in config)) {
+				return;
+			}
+			let registry: Registry;
+			const pluginName = String(config.plugin);
+			switch (pluginName) {
 				case 'kbga':
 					registry = new KBGA(config);
 					break;
@@ -85,7 +96,7 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 					registry = new Metagrid(config);
 					break;
 			}
-			this._registry.set(config.name, registry);
+			this._registry.set(String(config.name), registry);
 		});
 		if (ev && this._view) {
 			this._view.webview.html = this._getHtmlForWebview(this._view.webview);
@@ -96,55 +107,52 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 		this._view?.show(true);
 	}
 
-    public async query(text: string, register: string|null, editor?:vscode.TextEditor) {
+    public async query(text: string, register: string | null, editor?: vscode.TextEditor) {
 		if (editor) {
 			this._currentEditor = editor;
 		}
 		if (!register) {
 			register = this._currentRegister;
 		}
-		vscode.window.withProgress({
+		await vscode.window.withProgress({
 			location: vscode.ProgressLocation.Notification,
 			title: `Querying authorities for ${text}`,
 			cancellable: false
-		}, (progress) => {
-			return new Promise(async (resolve) => {
-				let results:RegistryResultItem[] = [];
-				let totalItems = 0;
-				if (register && register !== '') {
-					const plugin = this._registry.get(register);
-					if (plugin) {
-						try {
-							const result = await plugin.query(text);
-							results = result.items;
-							totalItems = result.totalItems;
-						} catch (e) {
-							console.error('Lookup failed on plugin %s', plugin.constructor.name);
-						}
-					}
-				} else {
-					const increment = 100 / this._registry.size;
-					for (let plugin of this._registry.values()) {
-						progress.report({
-							message: plugin.name,
-							increment: increment
-						});
-						try {
-							const result = await plugin.query(text);
-							totalItems += result.totalItems;
-							results = results.concat(result.items);
-						} catch (e) {
-							console.error('Lookup failed on plugin %s', plugin.constructor.name);
-						}
+		}, async (progress) => {
+			let results: RegistryResultItem[] = [];
+			let totalItems = 0;
+			if (register && register !== '') {
+				const plugin = this._registry.get(register);
+				if (plugin) {
+					try {
+						const result = await plugin.query(text);
+						results = result.items;
+						totalItems = result.totalItems;
+					} catch (error) {
+						console.error('Lookup failed on plugin %s:', plugin.constructor.name, error);
 					}
 				}
-				const data:RegistryResult = {
-					totalItems: totalItems,
-					items: results
-				};
-				this._view?.webview.postMessage({ command: 'results', data: data, query: text });
-				resolve(true);
-			});
+			} else {
+				const increment = 100 / this._registry.size;
+				for (const plugin of this._registry.values()) {
+					progress.report({
+						message: plugin.name,
+						increment: increment
+					});
+					try {
+						const result = await plugin.query(text);
+						totalItems += result.totalItems;
+						results = results.concat(result.items);
+					} catch (error) {
+						console.error('Lookup failed on plugin %s:', plugin.constructor.name, error);
+					}
+				}
+			}
+			const data: RegistryResult = {
+				totalItems: totalItems,
+				items: results
+			};
+			this._view?.webview.postMessage({ command: 'results', data: data, query: text });
 		});
     }
 
@@ -194,12 +202,20 @@ export class RegistryPanel implements vscode.WebviewViewProvider {
 			</html>`;
 	}
 
-	private _getApiOptions() {
-		const config:any[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
-		if (!config) {
+	private _getApiOptions(): string {
+		const config: unknown[] | undefined = vscode.workspace.getConfiguration('teipublisher').get('apiList');
+		if (!config || !Array.isArray(config)) {
 			return '';
 		}
-		return config.map((api) => `<option value="${api.name}">${api.label} - ${this._registry.get(api.name)?.name}</option>`).join('');
+		return config.map((api: unknown) => {
+			if (!api || typeof api !== 'object' || !('name' in api) || !('label' in api)) {
+				return '';
+			}
+			const apiName = String(api.name);
+			const apiLabel = String(api.label);
+			const registryName = this._registry.get(apiName)?.name || '';
+			return `<option value="${apiName}">${apiLabel} - ${registryName}</option>`;
+		}).join('');
 	}
 }
 
